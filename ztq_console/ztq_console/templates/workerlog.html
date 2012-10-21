@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="{{ static_url('ztq_console:static/style.css') }}" type="text/css" />
+<script src="{{ static_url('ztq_console:static/script.js') }}" type="text/javascript" ></script>
+</head>
+<body>
+<div id="discribe">最近{{sindex}} ~ {{eindex}}条工作历史如下：</div>
+<div id="status-section">
+        <table width="100%">
+          <thead>
+            <tr>
+                <th rowspan="2" width="80">状态</th>
+                <th>提交时间</th>
+                <th >服务器</th>
+                <th >任务名</th>
+                <th >开始时间</th>
+                <th >结束时间</th>
+                <th >备注</th>
+            </tr>
+            <tr>
+                <th colspan="6">任务信息</th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% if worker_log %}
+            {% for log in worker_log %}
+            <tr>
+              <td rowspan="2">
+                  {% if log['_status'] %}
+                    <pre>出错 <img src="{{ static_url('ztq_console:static/images/alert.gif') }}" alt="failed" style="vertical-align:bottom" /></pre>
+                  {% else %}
+                    <pre>成功 <img src="{{ static_url('ztq_console:static/images/ok.gif') }}" alt="success" style="vertical-align:bottom" /></pre>
+                  {% endif %}
+              </td>
+              <td><pre>{{ log['_created'] }}</pre></td>
+              <td><pre>{{ log['_server'] }}</pre></td>
+              <td><pre>{{ log['_func'] }}</pre></td>
+              <td><pre>{{ log['_start'] }}</pre></td>
+              <td><pre>{{ log['_end'] }}</pre></td>
+              <td><pre>{{ log['_comment'] }}</pre></td>
+            </tr>
+            <tr>
+                <td colspan="6"">
+                    {% if log['_file'] %}
+                        文件： {{log['_file']}}
+                    {% endif %}
+
+                    {% if log['_reason'] %}
+                        <pre>{{ log['_reason'] }}</pre>
+                    {% endif %}
+                    <a href="javascript:void(0);" onclick="show_detail(this);"><pre style="display:none">{{ log['_detail'] }}</pre>详细信息</a><br>
+                </td>
+            </tr>
+            {% endfor %}
+          {% endif %} 
+          </tbody>
+        </table>
+
+        <div style="text-align:center;">
+            <span>
+                {% if fpage %}
+                <a href="{{ gen_url(page=fpage) }}"> 上一页 </a>
+                {% else %}
+                <span > 上一页 </span>
+                {% endif %}
+            </span> 
+            < {{npage-1}} >
+            <span>
+                <a href="{{ gen_url(page=npage) }}"> 下一页 </a>
+            </span>
+        </div>
+</div>
+  </body>
+</html>

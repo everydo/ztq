@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="{{ static_url('ztq_console:static/style.css') }}" type="text/css" />
+</head>
+<body>
+<div id="discribe">最近{{sindex}} ~ {{eindex}}条服务器运行如下：</div>
+<div id="status-section">
+		<table>
+          <thead>
+            <tr>
+			<th class="text">工作端</th>
+			<th class="text">服务器IP</th></th>
+			<th class="text">报告时间</th></th>
+			<th class="text">状态</th></th>
+			</tr>
+          </thead>
+          <tbody>
+		  {% if sys_log %}
+            {% for log in sys_log %}
+            <tr>
+              <td><pre>{{ log['alias'] }}</pre></td>
+			  <td><pre>{{ log['host'] }}</pre></td>
+			  <td><pre>{{ log['_timestamp'] }}</pre></td>
+			  <td><pre>{{ log['type'] }}</pre></td>
+            </tr>
+            {% endfor %}
+		  {% endif %} 
+          </tbody>
+        </table>
+        <div style="text-align:center;">
+            <span>
+                {% if fpage %}
+                <a href="{{ gen_url(page=fpage) }}"> 上一页 </a>
+                {% else %}
+                <span > 上一页 </span>
+                {% endif %}
+            </span> 
+            < {{npage-1}} >
+            <span>
+                <a href="{{ gen_url(page=npage) }}"> 下一页 </a>
+            </span>
+        </div>
+</div>
+  </body>
+</html>

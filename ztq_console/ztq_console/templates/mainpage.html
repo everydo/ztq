@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>{{ title }}</title>
+<link rel="stylesheet" href="{{ static_url('ztq_console:static/style.css') }}" type="text/css" />
+<script rel="stylesheet" src="{{ static_url('ztq_console:static/jquery-1.6.2.min.js') }}" type="text/javascript" />
+</script>
+</head>
+
+<frameset rows="90px,*" framespacing=0 frameborder=0 scrolling=no>
+    <frame src="/top.html" ></frame>
+    <frameset cols="150px,*" framespacing=0 frameborder=0 scrolling=no >
+        <frame src="/menu.html"></frame>
+        <frame name="content" src="{{ links[0][0] }}"></frame>
+    </frameset>
+</frameset>
+</html> 

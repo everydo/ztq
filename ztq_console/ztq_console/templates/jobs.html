@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="{{ static_url('ztq_console:static/style.css') }}" type="text/css" />
+<script src="{{ static_url('ztq_console:static/script.js') }}" type="text/javascript" ></script>
+</head>
+<body>
+<div id="discribe">{{ queue_name }}:队列信息</div>
+<div id="status-section">
+        <table>
+          <thead>
+            <tr>
+            <th class="text">提交时间</th>
+            <th class="text">任务信息</th></th>
+            <th class="text">操作</th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% if jobs %}
+            {% for job in jobs %}
+            <tr>
+              <td><pre>{{ job['_created'] }}</pre></td>
+              <td>
+                  <a href="javascript:void(0);" onclick="show_detail(this);"><pre style="display:none">{{ job['_detail'] }}</pre>详细信息</a><br>
+              </td>
+              <td>
+                  <a class="bt" href="{{ gen_url('taskqueue_action', id=job['_queue_name'], _query={'action':'high_priority','hash_id':job['_id']}) }}">优先处理</a> 
+                  <a class="bt" href="{{ gen_url('taskqueue_action', id=job['_queue_name'], _query={'action':'delete','hash_id':job['_id']}) }}">删除</a>
+              </td>
+            </tr>
+            {% endfor %}
+          {% endif %}
+          </tbody>
+        </table>
+</div>
+  </body>
+</html>

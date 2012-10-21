@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="{{ static_url('ztq_console:static/style.css') }}" type="text/css" />
+<script src="{{ static_url('ztq_console:static/script.js') }}" type="text/javascript" ></script>
+</head>
+<body>
+<div id="discribe">下面是各个工作端的当前工作情况:</div>
+<div id="status-section">
+        <table>
+          <thead>
+            <tr>
+                <th rowspan="2">主机名称</th>
+                <th>IP</th>
+                <!--<th>CPU 型号</th>-->
+                <th>CPU 占用</th>
+                <th>内存占用</th>
+                <th>启动时间</th>
+                <th>上报时间</th>
+                <!--<th>工作权重</th>-->
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            <tr>
+                <th colspan="7">当前工作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if workers %}
+                {% for worker in workers %}
+                    <tr>
+                      <td rowspan="2"><pre>{{ worker['_worker_name'] }}</pre></td>
+                      <td><pre>{{ worker['ip'] }}</pre></td>
+                      <!--<td><pre>{{ worker['cpu_style'] }}</pre></td>-->
+                      <td><pre>{{ worker['cpu_percent'] }}</pre></td>
+                      <td><pre>共 {{ worker['mem_total'] }}<br />已用 {{ worker['mem_percent'] }}</pre></td>
+                      <td><pre>{{ worker['_started'] }}</pre></td>
+                          <! 工作端正在进行哪些任务>
+                      <td><pre>{{ worker['_timestamp'] }}</pre></td>
+                      <!--
+                      <td>
+                            <strong>{{ worker['_worker_weight'] }}</strong> &nbsp;
+                            <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'worker_up'}) }}"><img src="{{ static_url('ztq_console:static/images/up.gif') }}" alt="up ↑" title="up ↑" /></a> &nbsp;
+                            <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'worker_down'}) }}"><img src="{{ static_url('ztq_console:static/images/down.gif') }}" alt="down ↓" title="down ↓" /></a>
+                      </td>
+                      --->
+                      <td>
+                          {% if worker['_active'] == 'shutdown' %}
+                              <pre> 下线 </pre>
+                          {% elif worker['_active'] == 'ldle' %}
+                              <pre> 空闲 </pre>
+                          {% elif worker['_active'] == 'work' %}
+                              <pre> 运转 </pre>
+                          {% endif %}
+                      </td>
+                      {% if worker['_worker_weight'] %}
+                          <td rowspan="2" class="no-wrap">
+                              <a class="bt" href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'update'}) }}">刷新</a>
+                              <a class="bt" href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'stop_worker'}) }}">停止</a>
+                          </td>
+                      {% else %}
+                          <!--<td><pre>{{ worker['_worker_weight'] }}</pre></td>-->
+                          <td rowspan="2" class="no-wrap">
+                            <a class="bt" href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'enable'}) }}">启用</a>
+                            <a class="bt" href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'delete'}) }}" onclick="return confirm('确认该 Worker 不再使用才可以删除，确定？')">删除</a>
+                          </td>
+                      {% endif %}
+                    </tr>
+                    <tr>
+                      <td colspan="7">
+                      {% for thread in worker['_threads'] %}
+                          <div style="margin:1.1em 0;">
+                          在进程 {{ thread['_name'] }} 上:&nbsp;&nbsp;
+                          {{ thread['_comment'] }} 已经运行了 {{thread['_take_time']}} 
+                          <a class="bt" href="javascript:void(0);" onclick="show_detail(this);"><span style="display:none">{{ thread['_detail'] }}</span>详细信息</a>
+                          <a class="bt" href="javascript:void(0);" onclick="show_detail(this);"><span style="display:none">{{ thread['_thread_detail'] }}</span>线程信息</a>
+                          {% if thread['_pid'] != -1 %}
+                          <a class="bt" href="{{ gen_url('end_thread', id=worker['_worker_name'], thread=thread['_name'], pid=thread['_pid']) }}">停止</a><br>
+                          {% endif %}
+                          </div>
+                      {% endfor %}
+              </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+  </div>
+  </body>
+</html>

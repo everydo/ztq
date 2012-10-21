@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="{{ static_url('ztq_console:static/style.css') }}" type="text/css" />
+<script src="{{ static_url('ztq_console:static/script.js') }}" type="text/javascript" ></script>
+<script rel="stylesheet" src="{{ static_url('ztq_console:static/jquery-1.6.2.min.js') }}" type="text/javascript" />
+</script>
+</head>
+<body>
+<div id="discribe">
+    最近{{sindex}} ~ {{eindex}}条错误清单如下：
+</div>
+<div id="status-section">
+        
+        <table style="width:100%; position:fixed;">
+          <thead>
+            <th>所属队列</th>
+            <th>工作端</th>
+            <th>开始时间</th>
+            <th>结束时间</th>
+            <th>出错类型</th>
+            <th width="150">操作</th>
+          </thead>
+        </table>
+
+        <div id="discribe">如下工作发生异常，您可以删除或者，重新执行:</div>
+
+        <table style="width:100%">
+          <tbody>
+            {% if error_jobs %}
+                {% for queue in error_jobs %}
+                    {% for job in queue %}
+                    <tr>
+                      <td rowspan="2"><pre class="no-wrap">
+                          <strong>{{ job['_queue_name'] }}</strong>
+                      </pre></td>
+                      <td><pre>{{ job['_server'] }}</pre></td>
+                      <td><pre>{{ job['_start'] }}</pre></td>
+                      <td><pre>{{ job['_end'] }}</pre></td>
+                      <td><pre>{% if job['_error_mime'] %}{{ job['_error_mime'] }}{% else %}未知{% endif %}</pre>
+                      </td>
+                      <td class="no-wrap" width="150">
+                          <a class="bt" href="javascript:void(0);" onclick="show_detail(this);"><span style="display:none">{{ job['_detail'] }}</span>详细信息</a>
+                          <a class="bt redo" href="{{ gen_url('errorqueues_job', id=job['_queue_name'], _query={'action':'redo','hash_id':job['hash_id']}) }}">重做</a>
+                          <a class="bt confirm" href="{{ gen_url('errorqueues_job', id=job['_queue_name'], _query={'action':'remove','hash_id':job['hash_id']}) }}">删除</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="5">
+                          {% if job['_file'] %}
+                              <pre class="red">出错文件：{{ job['_file'] }}</pre>
+                          {% endif %}
+                          <pre>{{ job['_reason'] }}</pre>
+                      </td>
+                    <tr>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+        <div style="text-align:center;">
+            <span>
+                {% if fpage %}
+                <a href="{{ fpage }}"> 上一页 </a>
+                {% else %}
+                <span > 上一页 </span>
+                {% endif %}
+            </span> 
+            < {{npage-1}} >
+            <span>
+                <a href="{{ npage }}"> 下一页 </a>
+            </span>
+        </div>
+    </div>
+
+    <script>
+    $('.confirm').click(function(event) {
+        var result = confirm('确定要删除？这并不是一个常用操作');
+        if(result){
+            var url = $(this).attr('href');
+            $.post(url, function(data){
+                
+            });
+            
+            var self_tr = $(this).parents('tr').eq(0);
+            var next_tr = self_tr.next();
+            next_tr.remove();
+            self_tr.remove();
+        }
+        event.preventDefault();
+    });
+
+    $('.redo').click(function(event) {
+
+        var url = $(this).attr('href');
+        $.post(url, function(data){
+            
+        });
+        
+        var self_tr = $(this).parents('tr').eq(0);
+        var next_tr = self_tr.next();
+        next_tr.remove();
+        self_tr.remove();
+
+        event.preventDefault();
+    });
+    </script>
+    
+  </body>
+</html>

@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="{{ static_url('ztq_console:static/style.css') }}" type="text/css" />
+</head>
+<body>
+
+<div id="discribe">转换队列</div>
+
+<div id="status-section">
+
+        <table style="width:100%;">
+
+          <thead>
+            <tr>
+                <th>队列</th>
+                <!--
+                <th width="300px">标签</th>
+                <th>队列方向</th>
+                -->
+                <th>工作端</th>
+                <th>任务数</th>
+                <th>任务首个时间</th>
+                <th>错误数</th>
+                <th>错误首个时间</th>
+                <th>操作</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for task_queue in task_queues %}
+                <tr>
+                  <td><pre><strong>{{ task_queue['name'] }}<strong></pre></td>
+                  <!--
+                  <td><div>{% for tag in task_queue['tags'] %} <div style="float:left; margin-right:1em;">{{tag}}</div> {% endfor %}</div></td>
+                  <td><pre>{{ task_queue['weight'] }} <a href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'queue_up'}) }}">↑</a> <a href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'queue_down'}) }}">↓</a></pre></td>
+                  <td>
+                      {% if task_queue['from_right'] %}
+                          <a title="点击切换" href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'from_left'}) }}">首</a> 
+                      {% else %}
+                          <a title="点击切换" href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'from_right'}) }}">尾</a>
+                      {% endif %}
+                  </td>
+                  -->
+                  {% if task_queue['workers'] %}
+                      <td><pre>{% for worker in task_queue['workers'] %}{% for detail in worker %}{{detail}}{% endfor %}<br>{% endfor %}</pre></td>
+                  {% else %}
+                      <td></td>
+                  {% endif %}
+                  
+                  <td>
+                      {% if task_queue['length'] == 0 %}
+                          <span> 0 </span>
+                      {% else %}
+                          <pre><a href="{{ gen_url('taskqueue', id=task_queue['name']) }}">{{ task_queue['length']}}</a></pre>
+                      {% endif %}
+                  </td>
+                  <td><pre>{{ task_queue['first'] }}</pre></td>
+                  <td>
+                      {% if task_queue['error_length'] == 0 %}
+                          <span> 0 </span>
+                      {% else %}
+                          <a href="{{ gen_url('errorqueue', page=1, id=task_queue['name']) }}">{{ task_queue['error_length'] }}</a>
+                          <img src="{{ static_url('ztq_console:static/images/alert.gif') }}" alt="警告" style="vertical-align:bottom" />
+                      {% endif %}
+                  </td>
+                  <td><pre>{{ task_queue['error_first'] }}</pre></td>
+                  <td>
+                      <a class="bt redo" href="/redo_all_for_queue/{{ task_queue['name'] }}"
+                          onClick="return confirm('确定要全部重做吗？这并不是一个常用操作');"> 全部重做 </a>
+                  </td>
+                </tr>
+            {% endfor %}
+            
+            <tr>
+              <td><pre>合计</pre></td>
+              <td><pre></pre></td>
+              <td><pre>{{task_job_length}}</pre></td>
+              <td><pre></pre></td>
+              <td><pre><a href="/errorlog">{{error_job_length}}</a></pre></td>
+              <td><pre></pre></td>
+              <td><pre></pre></td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+</body>
+</html>

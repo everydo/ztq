@@ -1,0 +1,60 @@
+﻿<html>
+    <head>
+    <link rel="stylesheet" href="{{ static_url('ztq_console:static/style.css') }}" type="text/css" />
+    </head>
+  <body>
+  
+<div id="discribe">下面是各个工作端的当前工作情况:</div>
+<div id="status-section">
+        <table>
+          <thead>
+            <tr>
+            <th>名字</th>
+            <th>IP</th>
+            <th>CPU</th>
+            <th>占用</th>
+            <th>内存</th>
+            <th>上次启动时间</th>
+            <th>上报时间</th>
+            <th>当前工作</th>
+            <th>工作权重</th>
+            <th>状态</th>
+            <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if workers %}
+            {% for worker in workers %}
+            <tr>
+              <td><pre>{{ worker['_worker_name'] }}</pre></td>
+              <td><pre>{{ worker['ip'] }}</pre></td>
+              <td><pre>{{ worker['cpu_style'] }}</pre></td>
+              <td><pre>{{ worker['cpu_percent'] }}</pre></td>
+              <td><pre>共 {{ worker['mem_total'] }} | 已用 {{ worker['mem_percent'] }}</pre></td>
+              <td><pre>{{ worker['_started'] }}</pre></td>
+              {% if worker['_worker_weight'] %}
+                  <td><pre>{{ worker['_timestamp'] }}</pre></td>
+                  <! 工作端正在进行哪些任务>
+                  <td><pre>{% for thread in worker['_threads'] %}{{thread['_name']}}:<br>{{thread['_comment']}}. {{thread['_take_time']}}秒前 <a href="{{ gen_url('worker', id=worker['_worker_name'], thread=thread['_name'], pid=thread['_pid']) }}">Kill</a><br>{% endfor %}</pre></td>
+                  <td><pre>{{ worker['_worker_weight'] }} <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'worker_up'}) }}">↑</a> <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'worker_down'}) }}">↓</a></pre></td>             
+                  <td><pre>{{ worker['_active'] }}</pre></td>
+                  <td><pre><a href="{{ gen_url('end_thread', id=worker['_worker_name'], thread=worker['_threads']['_name'], pid=worker['_threads']['_pid']) }}">停止</a><br></pre></td>    
+              {% else %}
+                  <td><pre>{{ worker['_timestamp'] }}</pre></td>
+                  <td><pre></pre></td>
+                  <td><pre>{{ worker['_worker_weight'] }}</pre></td>
+                  <td><pre>{{ worker['_active'] }}</pre></td>
+                  <td><pre>
+                        <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'delete'}) }}">删除</a>
+                        <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'enable'}) }}">启用</a>
+                      </pre>
+                  </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+  </div>
+  </body>
+</html>
