@@ -11,6 +11,8 @@ ZTQ是python语言的一个开源异步队列服务, 使用redis作为队列的�
 - 容易调试
 - 灵活调度，高效利用服务器
 
+详细介绍可参看： https://github.com/everydo/ztq/raw/master/about-ztq.pptx
+
 ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查看和易度文档管理等系统中广泛使用。
 
 安装
