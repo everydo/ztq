@@ -59,7 +59,7 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
                print ‘END:’, body
     
         @async(queue=‘mail’)            # 使用队列mail
-        def send(body):
+        def send2(body):
                print ‘START2’, body
                raise Exception(‘connection error’)
 
