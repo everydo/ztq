@@ -65,7 +65,11 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
 
 3. 运行worker
 
-   ``bin/ztq_worker app.ini``, app.ini 例子:
+   通过这个命令运行worker
+
+        bin/ztq_worker app.ini
+
+   下面是 app.ini 例子:
 
         [server]
         host = localhost
@@ -96,8 +100,12 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
         # 动态指定queue
         send(‘hello world from mail’, ztq_queue=‘mail’)
 
+启动监控后台
+--------------------
 
-使用更高级的特征
+    bin/ztq_console app.ini
+
+更高级的特性
 --------------------------
 
 1. 抢占式执行
