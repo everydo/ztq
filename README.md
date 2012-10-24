@@ -125,16 +125,15 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
 
    任务存在如下状态:
 
-   * running: 代表正在运行, 
-   * queue: 代表正在排队
-   * error: 代表出错
-   * none: 代表这个任务不在排队，也没在执行
+        * running: 代表正在运行, 
+        * queue: 代表正在排队
+        * error: 代表出错
+        * none: 代表这个任务不在排队，也没在执行
 
    参数：
 
-   - ztq_first：存在就优先
-   - ztq_run：不存在就运行
-
+        - ztq_first：存在就优先
+        - ztq_run：不存在就运行
 
 3. 支持事务
 
