@@ -26,7 +26,7 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
 
 1. ztq_core:   提供队列操作的底层操作API
 2. ztq_worker:   队列的处理服务
-3. ztq_console：队列的监控后台服务，这个包是可选运行的
+3. ztq_console：队列的监控后台服务（使用Pyramid开发），这个包是可选运行的
 4. ztq_demo： 一个demo示例
 
 可直接使用标准的pip进行安装：
