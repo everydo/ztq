@@ -36,9 +36,11 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
 
 1. 先定义一个普通的任务
 
+        import time
+
         def send(body):
             print ‘START: ‘, body
-            sleep(5)
+            time.sleep(5)
             print ‘END:’, body
     
         def send2(body):
@@ -53,7 +55,7 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
         @async                            # 使用默认队列default
         def send(body):
                print ‘START: ‘, body
-               sleep(5)
+               time.sleep(5)
                print ‘END:’, body
     
         @async(queue=‘mail’)            # 使用队列mail
