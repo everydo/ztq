@@ -44,13 +44,13 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
         import time
 
         def send(body):
-            print ‘START: ‘, body
+            print 'START: ', body
             time.sleep(5)
-            print ‘END:’, body
+            print 'END:’, body
     
         def send2(body):
-            print ‘START2’, body
-            raise Exception(‘connection error’)
+            print 'START2', body
+            raise Exception('connection error')
  
 2. 将普通的任务改成队列任务
 
@@ -59,22 +59,22 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
     
         @async                            # 使用默认队列default
         def send(body):
-               print ‘START: ‘, body
+               print 'START: ', body
                time.sleep(5)
-               print ‘END:’, body
+               print 'END:', body
     
-        @async(queue=‘mail’)            # 使用队列mail
+        @async(queue='mail')            # 使用队列mail
         def send2(body):
-               print ‘START2’, body
-               raise Exception(‘connection error’)
+               print 'START2', body
+               raise Exception('connection error')
 
 3. 运行worker
 
    通过这个命令运行worker
 
-        bin/ztq_worker app.ini
+        bin/ztq_worker worker.ini
 
-   下面是 app.ini 例子:
+   下面是 worker.ini 例子:
 
         [server]
         host = localhost
@@ -95,15 +95,15 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
 4. 运行
 
         import ztq_core
-        from my_send import send
+        from ztq_demo.tasks import send
     
         # 设置 Redis 连接
-        ztq_core.setup_redis(‘default’, ‘localhost’,  6379, 0)
+        ztq_core.setup_redis('default', 'localhost',  6379, 0)
     
-        send(‘hello, world’)
+        send('hello, world')
     
         # 动态指定queue
-        send(‘hello world from mail’, ztq_queue=‘mail’)
+        send('hello world from mail', ztq_queue='mail')
 
 启动监控后台
 --------------------
