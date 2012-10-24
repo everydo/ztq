@@ -17,8 +17,8 @@ ZTQ是由易度云办公(http://everydo.com) 赞助开发的，在易度云查�
 
 主要作者和维护人:
 
-- 潘俊勇 http://weibo.com/panjunyong
 - 徐陶哲 http://weibo.com/xutaozhe
+- 潘俊勇 http://weibo.com/panjunyong
 
 安装
 --------------------
