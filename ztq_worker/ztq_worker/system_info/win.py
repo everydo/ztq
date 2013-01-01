@@ -31,7 +31,15 @@ def get_cpu_style():
         popen = sp.Popen('cscript /nologo %s'%vbs_path, stdout=sp.PIPE, shell=True)
         popen.wait()
         result = popen.stdout.read()
-        _CPU_STYLE = '%s'%result.strip()
+        cpu_style = '%s'%result.strip()
+
+        try:
+            cpu_style = cpu_style.decode('gb18030')
+        except UnicodeDecodeError:
+            cpu_style = cpu_style.decode('utf8')
+
+        _CPU_STYLE = cpu_style.encode('utf8')
+            
     return _CPU_STYLE
 
 def get_ip():

@@ -12,7 +12,7 @@ import UserDict, UserList
 
 ConnectionError = redis.exceptions.ConnectionError
 
-DEFAULT_ENCODING = sys.getfilesystemencoding()
+DEFAULT_ENCODING = 'UTF-8' # sys.getdefaultencoding()
 #--- System related ----------------------------------------------
 SYSTEMS = {
     'default': redis.Redis(host='localhost', port=6379)
@@ -155,16 +155,13 @@ class HashFu:
         except: return default
         
     def items(self):
-        key_list = get_redis(self.system).keys(self.name+"*")
-        for key in key_list:
-            key_name = key[len(self.name):]
-
+        for key in self.keys():
             # key_list 不是实时的数据
             # 这个任务可能已经被取走了（当监视这个队列的工作线程有多个的时候）
-            value = self.get(key_name)
+            value = self.get(key)
             if value is None: continue
 
-            yield key_name, value
+            yield key, value
 
     def keys(self):
         return get_redis(self.system).hkeys(self.name) or []
@@ -338,8 +335,8 @@ class QueueFu(ListFu):
         if serialized_data:
             # 阻塞式获取，返回self.name, result
             if isinstance(serialized_data, (tuple, list, set)) and \
-                     len(serialized_data) == 2 and serialized_data[1]:
-                return self.loads(serialized_data[1])
+                    len(serialized_data) == 2:
+                return self.loads(serialized_data[1]) if serialized_data[1] else None
             # 直接获取，返回 result
             else:
                 return self.loads(serialized_data)

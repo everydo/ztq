@@ -50,7 +50,8 @@ def main(global_config, redis_host='127.0.0.1', redis_port='6379', \
     config.add_route('syslog', '/syslog/{page}')
     config.add_route('errorlog', '/errorlog/{page}')
     config.add_route('errorqueue', '/errorqueue/{id}/{page}')
-    config.add_route('redo_all_for_queue', '/redo_all_for_queue/{id}')
+    config.add_route('redo_all_error_for_queue', '/redo_all_error_for_queue/{id}')
+    config.add_route('del_all_error_for_queue', '/del_all_error_for_queue/{id}')
     if addon_config is not None:
         addon_config(config)
     config.end()

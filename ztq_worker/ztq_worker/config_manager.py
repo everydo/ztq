@@ -1,8 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 import os 
-import types
-import importlib
 
 from ConfigParser import ConfigParser
 from system_info import get_ip

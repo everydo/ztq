@@ -1,3 +1,5 @@
+include *.txt
+include app.ini
 recursive-include ztq_console/templates *.html
 recursive-include ztq_console/static *.js *.css
-recursive-include ztq_console/static/images/ *.gif *.jpg
+recursive-include ztq_console/static/images *.gif *.jpg

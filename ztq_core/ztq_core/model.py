@@ -132,6 +132,11 @@ def get_error_queue(queue_name, system='default'):
     error_queue = 'ztq:queue:error:' + queue_name
     return get_queue(error_queue, system=system, serialized_type='string')
 
+def get_buffer_queue(queue_name, system='default'):
+    """ json格式和work_log相同 """
+    buffer_queue = 'ztq:queue:buffer:' + queue_name
+    return get_queue(buffer_queue, system=system)
+
 def get_system_log_queue():
     """
     Json格式为:

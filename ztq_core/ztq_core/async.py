@@ -1,7 +1,7 @@
 # -*- encoding:utf-8 -*-
 
 import types
-from task import register, push_task, has_task, gen_task
+from task import register, push_task, has_task, gen_task, push_buffer_task
 import transaction
 
 use_transaction = False
@@ -27,7 +27,19 @@ def _setup_callback(kw):
         callback_queue = callback_kw.pop('ztq_queue', callback_func._ztq_queue)
         kw.update({'ztq_pcallback':"%s:%s" % (callback_queue, callback_func.__raw__.__name__),
                    'ztq_pcallback_args':callback_args,
-                   'ztq_fcallback_kw':callback_kw})
+                   'ztq_pcallback_kw':callback_kw})
+
+def push_task_to_queue(task_name, args, kw, on_commit=False, buffer=False):
+    if on_commit:
+        if buffer:
+            add_after_commit_hook(push_buffer_task, (task_name,) + args, kw)
+        else:
+            add_after_commit_hook(push_task, (task_name,) + args, kw)
+    else:
+        if buffer:
+            push_buffer_task(task_name, *args, **kw)
+        else:
+            push_task(task_name, *args, **kw)
 
 def async(*_args, **_kw):
     """ 这是一个decorator，事务提交的时候，提交到job队列，异步执行 
@@ -58,30 +70,28 @@ def async(*_args, **_kw):
         func = _args[0]
         def new_func1(*args, **kw):
             queue_name = kw.pop('ztq_queue', 'default')
+            buffer = kw.pop('ztq_buffer', False)
             on_commit= kw.pop('ztq_transaction', use_transaction) 
             task_name = "%s:%s" % (queue_name, func.__name__)
             _setup_callback(kw)
-            if on_commit:
-                add_after_commit_hook(push_task, (task_name,) + args, kw)
-            else:
-                push_task(task_name, *args, **kw)
+            push_task_to_queue(task_name, args, kw, on_commit=on_commit, buffer=buffer)
+
         new_func1.__raw__ = func
         new_func1._ztq_queue = 'default'
         register(func)
         return new_func1
     else:
         _queue_name = _kw.get('queue', 'default')
-        _on_commit= _kw.get('transaction', use_transaction) 
         def _async(func):
             def new_func(*args, **kw):
-                on_commit= kw.pop('ztq_transaction', _on_commit) 
+                #on_commit= kw.pop('ztq_transaction', _on_commit) 
+                on_commit= kw.pop('ztq_transaction', use_transaction) 
                 queue_name = kw.pop('ztq_queue', _queue_name)
+                buffer = kw.pop('ztq_buffer', False)
                 task_name = "%s:%s" % (queue_name, func.__name__)
                 _setup_callback(kw)
-                if on_commit:
-                    add_after_commit_hook(push_task, (task_name,) + args, kw)
-                else:
-                    push_task(task_name, *args, **kw)
+                push_task_to_queue(task_name, args, kw, on_commit=on_commit, buffer=buffer)
+
             new_func.__raw__ = func
             new_func._ztq_queue = _queue_name
             register(func)
@@ -97,9 +107,9 @@ def ping_task(func, *args, **kw):
     to_front = kw.pop('ztq_first', False)
     on_commit = kw.pop('ztq_transaction', None)
     run = kw.pop('ztq_run', False)
-    task = gen_task(func.__raw__.__name__, args, kw)
+    task = gen_task(func.__raw__.__name__, *args, **kw)
     result = has_task(queue_name, task, to_front=to_front)
-    if result is None and run:
+    if result == 'none' and run:
         kw['ztq_queue'] = queue_name
         kw['ztq_first'] = to_front
         if on_commit is not None:
@@ -108,7 +118,6 @@ def ping_task(func, *args, **kw):
     return result
 
 #### 以下代码让队列的任务支持事务
-
 def enable_transaction(enable):
     """ 是否支持transaction, 默认不支持 """
     global use_transaction

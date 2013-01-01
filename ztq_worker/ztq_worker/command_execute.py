@@ -2,7 +2,8 @@
 
 #from zopen.transform import set_drive_config
 from config_manager import safe_get_host, set_config
-from job_thread_manager import JobThreadManager, kill_threads
+from job_thread_manager import JobThreadManager
+from buffer_thread import BufferThread
 from system_info import get_cpu_style, get_cpu_usage, get_mem_usage
 import os
 import sys
@@ -12,6 +13,9 @@ import ztq_core
 
 # 管理工作线程, 添加线程、删除线程、保存信息
 job_thread_manager = JobThreadManager()
+
+# buffer 线程
+buffer_thread_instance = None
 
 def set_job_threads(config_dict):
     """ 根据配置信息和job_thread_manager.threads 的数量差来退出/增加线程
@@ -119,12 +123,33 @@ else:
         kill_command = "taskkill /F /T /pid %s" % pid
         os.system(kill_command)
 
+def start_buffer_thread(buffer_thread_config):
+    """ 开启一个buffer队列线程，监视所有的buffer队列，
+        根据buffer队列对应的job队列拥塞情况, 将buffer队列的任务合适的推送到相应的job队列
+    """
+    if not buffer_thread_config: return
+
+    global buffer_thread_instance
+    if buffer_thread_instance is not None:
+        buffer_thread_instance.stop()
+
+    buffer_thread = BufferThread(buffer_thread_config)
+    buffer_thread.setDaemon(True)
+    buffer_thread.start()
+
+    buffer_thread_instance = buffer_thread
+    sys.stdout.write('start a buffer thread. \n')
 
 def clear_transform_thread(threads=None):
-    """ clear job_threads """
+    """ clear job_threads and buffer_thread """
     threads = threads or job_thread_manager.threads
     names = threads.keys()
     job_threads = threads.values()
+
+    # 退出buffer 线程
+    if buffer_thread_instance is not None:
+        buffer_thread_instance.stop()
+        sys.stdout.write('wait the buffer thread stop...\n')
 
     # 将进程的stop 标志 设置为True
     map(job_thread_manager.stop, names)

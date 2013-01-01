@@ -4,7 +4,6 @@ import sys, os
 from command_thread import CommandThread
 from config_manager import init_config, get_configs, safe_get_host
 from command_execute import init_job_threads, set_job_threads
-import importlib
 
 import ztq_core
 
@@ -24,7 +23,7 @@ def main():
     # 动态注册task
     for module in server['modules'].split():
         try:
-            importlib.import_module(module)
+            __import__(module)
         except ImportError:
             raise Exception('Not imported the %s module' % module)
 
@@ -47,13 +46,12 @@ def main():
         queue_config = ztq_core.get_queue_config()
         # 如果配置有queues，自动启动线程监视
         job_threads = {}
-        queue_config = ztq_core.get_queue_config()
         for queue_name, sleeps in get_configs('queues').items():
-            queue_config[queue_name] = {'title': queue_name} # for ztq_app
             job_threads[queue_name] = [
                     {'interval': int(sleep)} for sleep in sleeps.split(',')
                     ]
-            queue_config[queue_name] = {'name':queue_name, 'title':queue_name, 'widget': 5}
+            if not queue_config.get(queue_name, []):
+                queue_config[queue_name] = {'name':queue_name, 'title':queue_name, 'widget': 5}
 
         init_job_threads(job_threads)
 

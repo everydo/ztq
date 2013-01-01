@@ -69,6 +69,11 @@ def _get_task_md5(task):
 
     return md5(_value).digest()
 
+def push_buffer_task(full_func_name, *args, **kw):
+    queue_name, func_name = split_full_func_name(full_func_name)
+    task = gen_task(func_name, *args, **kw)
+    model.get_buffer_queue(queue_name).push(task)
+
 def push_task(full_func_name, *args, **kw):
     """
     callback: 这是另外一个注册的task，在func调用完毕后，会启动这个

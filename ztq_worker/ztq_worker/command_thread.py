@@ -1,9 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-import sys, traceback
-from job_thread_manager import KillThread
 from config_manager import safe_get_host
-from command_execute import report, kill_transform, cancel_transform, set_dirve, set_job_threads
+from command_execute import report, kill_transform, cancel_transform, set_job_threads
 from threading import Thread
 import time
 import ztq_core
@@ -31,9 +29,6 @@ class CommandThread(Thread):
                               timestamp=self.login_time,))
         # 报告机器状态
         worker_state[self.worker_name] = report(self.login_time)
-        # 开启监视线程 XXX 暂时没有用到
-        #kill_thread = KillThread()
-        #kill_thread.start()
 
     def run(self):
         self.init()

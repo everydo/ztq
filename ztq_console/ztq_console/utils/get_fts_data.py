@@ -62,17 +62,17 @@ def get_taskqueues_list():
         task_queue['error_length'] = sort_queue_name[queue_name]
 
         #任务首个时间
-        task_queue['error_first'] = task_queue['first'] = ''
+        task_queue['error_end'] = task_queue['first'] = ''
         first_job = queue[0]
         first_job= ztq_core.get_task_hash(queue_name).get(first_job)
         if first_job:
             task_queue['first'] = datetime.datetime.fromtimestamp(first_job['runtime'].get('create', 0))
         
         #错误最末一个的时间
-        error_first_job = ztq_core.get_error_queue(queue_name)[-1]
+        error_first_job = ztq_core.get_error_queue(queue_name)[0]
         error_first_job = ztq_core.get_error_hash(queue_name).get(error_first_job)
         if error_first_job:
-            task_queue['error_first'] = datetime.datetime.fromtimestamp(error_first_job['runtime'].get('create', 0))
+            task_queue['error_end'] = datetime.datetime.fromtimestamp(error_first_job['runtime'].get('create', 0))
 
         task_queue['weight'] = queue_weight.get(queue_name, 0)
         # 获取worker工作线程配置
@@ -84,6 +84,7 @@ def get_taskqueues_list():
                 task_queue['workers'].append([worker_name+':', config['interval']])
                 if 'from_right' in config:
                     task_queue['from_right'] = config['from_right']
+        task_queue['buffer_length'] = len(ztq_core.get_buffer_queue(queue_name))
         yield task_queue
 
 def get_queues_jobs(queue_name):

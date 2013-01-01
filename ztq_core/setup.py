@@ -29,7 +29,7 @@ setup(name='ztq_core',
 	  install_requires = [
         'redis>=2.4.9',
         'transaction',
-        'hiredis',
+       # 'hiredis',
         ]
 )
 

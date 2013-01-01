@@ -268,8 +268,8 @@ def error_jobs_handler(request):
         return HTTPFound(location = '/errorlog')
     else: return Response('Invalid request')
 
-@view_config(route_name='redo_all_for_queue')
-def redo_error_queue(request):    
+@view_config(route_name='redo_all_error_for_queue')
+def redo_all_error_for_queue(request):    
     """重做这个错误队列所有的任务
     """
     queue_id = request.matchdict['id']
@@ -280,6 +280,21 @@ def redo_error_queue(request):
             break
         error_task['runtime'] = {'queue':queue_id, 'create':int(time.time())}
         ztq_core.push_runtime_task(queue_id, error_task)
+
+    return HTTPFound(location = '/taskqueues')
+
+@view_config(route_name='del_all_error_for_queue')
+def del_all_error_for_queue(request):    
+    """删除这个错误队列所有的任务
+    """
+    queue_id = request.matchdict['id']
+
+    error_hash = ztq_core.get_error_hash(queue_id)
+    error_queue = ztq_core.get_error_queue(queue_id)
+
+    client = ztq_core.get_redis()
+    client.delete(error_queue.name)
+    client.delete(error_hash.name)
 
     return HTTPFound(location = '/taskqueues')
 
