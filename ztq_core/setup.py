@@ -6,6 +6,10 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
+requires = [ 'redis>=2.4.9', 'transaction',]
+
+if not os.sys.platform.startswith('win'):
+    requires.append('hiredis')
 
 setup(name='ztq_core',
       version = '1.0dev',
@@ -26,10 +30,6 @@ setup(name='ztq_core',
           'Operating System :: OS Independent',
           'Topic :: Internet :: WWW/HTTP',
           ],
-	  install_requires = [
-        'redis>=2.4.9',
-        'transaction',
-       # 'hiredis',
-        ]
+	  install_requires = requires,
 )
 

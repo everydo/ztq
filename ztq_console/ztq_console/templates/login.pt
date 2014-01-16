@@ -1,0 +1,28 @@
+<html>
+<head>
+  <link rel="stylesheet" href="/static/style_login.css" type="text/css" />
+  <script src="/static/jquery.js" type="text/javascript" ></script>
+</head>
+
+<body>
+    <h1>登录控制台</h1>
+    <p>进入易度控制台前，请输入登录用户和登录密码：</p>
+    <form action="${url}" method="post">
+    <fieldset>
+        <legend>登录输入框</legend>
+        <ul>
+          <input type="hidden" name="came_from" value="${came_from}"/>
+          <li>
+          <label>登录用户</label><input type="text" name="login" value="${login}"/>
+          </li>
+          <li>
+          <label>登录密码</label><input type="password" name="password" value="${password}"/>
+          </li>
+          <li>
+          <label></label><input type="submit" class="button" name="form.submitted" value="登录"/>
+          </li>
+        </ul>
+    </fieldset>
+    </form>
+</body>
+</html>

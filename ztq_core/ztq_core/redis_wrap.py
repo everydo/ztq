@@ -2,7 +2,6 @@
 
 import redis
 import pickle
-import sys
 try:
     import json
 except :
@@ -50,14 +49,15 @@ def get_key(name, system='default',serialized_type='json'):
     try:
         return loads(value)
     except:return value
+
+def del_key(name, system='default'):
+    get_redis(system).delete(name)
     
 def get_keys(name, system='default'):
-    key_list = get_redis(system).keys(name+"*")
-    for key in key_list:
+    for key in get_redis(system).keys(name + "*"):
         key_name = key[len(name):]
         yield key_name
-    
-    
+   
 def set_key(name, value, system='default',serialized_type='json'):
     dumps = dump_method[serialized_type]
     value = dumps(value)

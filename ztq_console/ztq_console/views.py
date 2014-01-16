@@ -1,7 +1,8 @@
 #coding:utf-8
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound
-from pyramid.view import view_config
+from pyramid.view import view_config, forbidden_view_config
+from pyramid.security import remember, forget
 from pyramid.events import subscriber
 from pyramid.interfaces import IBeforeRender
 from pyramid.url import static_url, resource_url, route_url
@@ -10,6 +11,7 @@ import time
 import ztq_core
 import utils 
 import urllib
+from utils.security import USERS
 
 MENU_CONFIG = {'title':u'ZTQ队列监控后台',
                'links':[('/workerstatus', u'工作状态'),
@@ -17,28 +19,30 @@ MENU_CONFIG = {'title':u'ZTQ队列监控后台',
                      ('/errorlog',u'错误清单'),
                      ('/workerlog', u'工作历史'),
                      ('/syslog', u'系统日志'),
+                     ('/password', u'修改密码'),
+                     ('/logout', u'退出登录'),
                      ]
         }
 
-@view_config(renderer='mainpage.html')
+@view_config(renderer='mainpage.html', permission='view')
 def main_view(request):
     """后台管理首页
     """  
     return MENU_CONFIG
 
-@view_config(name='top.html', renderer='top.html')
+@view_config(name='top.html', renderer='top.html', permission='view')
 def top_view(request):
     """后台管理首页
     """  
     return MENU_CONFIG
 
-@view_config(name='menu.html', renderer='menu.html')
+@view_config(name='menu.html', renderer='menu.html', permission='view')
 def menu_view(request):
     """初始化菜单
     """
     return MENU_CONFIG
 
-@view_config(name='workerstatus', renderer='worker.html')
+@view_config(name='workerstatus', renderer='worker.html', permission='edit')
 def workers_view(request):
     """后台管理首页
     传出参数:worker的相关信息,各个队列的工作情况
@@ -47,15 +51,15 @@ def workers_view(request):
     workers = utils.get_worker_list()    
     return {'workers':workers}  
     
-@view_config(name='syslog')
-@view_config(name='workerlog')
-@view_config(name='errorlog')
+@view_config(name='syslog', permission='edit')
+@view_config(name='workerlog', permission='edit')
+@view_config(name='errorlog', permission='edit')
 def route_main(request):
     route_name = request.view_name
     return HTTPFound(location=request.route_url(route_name, page=1))
 
 #--------------日志信息--------------------------------    
-@view_config(route_name='syslog', renderer='syslog.html')
+@view_config(route_name='syslog', renderer='syslog.html', permission='edit')
 def sys_log_view(request):
     """查看系统日志情况
     """
@@ -65,7 +69,7 @@ def sys_log_view(request):
     return pageination(utils.get_sys_log, page, 'sys_log')
 
 #--------------转换历史--------------------------------    
-@view_config(route_name='workerlog', renderer='workerlog.html')
+@view_config(route_name='workerlog', renderer='workerlog.html', permission='edit')
 def worker_log_view(request):
     """查看转换日志
     """
@@ -84,7 +88,6 @@ def config_worker(request):
     worker_weight = dispatcher_config['worker_weight']
     # 获取用户请求操作
     worker_id = request.matchdict['id']
-    # 根据操作类型进行权重调整,
     if url_action == 'stop_worker': 
         #停止worker
         worker_weight[worker_id] = 0
@@ -148,7 +151,7 @@ def stop_working_job(request):
 
 
 #--------------查看队列详情-------------------------------
-@view_config(name='taskqueues', renderer='queues.html')
+@view_config(name='taskqueues', renderer='queues.html', permission='edit')
 def task_queues(request):
     """查看转换队列运行状态
     传出参数:所有原子队列的运行转换
@@ -166,7 +169,7 @@ def task_queues(request):
             'task_job_length':task_job_length,
             'error_job_length':error_job_length, }
         
-@view_config(route_name='taskqueue',renderer='jobs.html')
+@view_config(route_name='taskqueue',renderer='jobs.html', permission='edit')
 def taskqueue(request):
     """用于查看某个队列的详细信息和运行情况
     """
@@ -203,7 +206,7 @@ def config_queue(request):
         utils.dispatch_single_queue(queue_id, from_right=False)   
     return HTTPFound(location = '/taskqueues') 
   
-@view_config(route_name='taskqueue_action')
+@view_config(route_name='taskqueue_action', permission='edit')
 def task_jobs_handler(request):
     """将任务调整到队头或者队尾
     传入参数:http://server/taskqueues/q01/job?action=high_priority&hash_id={{job_hash_id}}
@@ -230,8 +233,62 @@ def task_jobs_handler(request):
     else: 
         return Response('Invalid request')  
 
+#--------------登录界面--------------------------------    
+@view_config(route_name='login', renderer='templates/login.pt')
+@forbidden_view_config(renderer='templates/login.pt')
+def login(request):
+    login_url = request.route_url('login')
+    referrer = request.url
+    if referrer == login_url:
+        referrer = '/' # never use the login form itself as came_from
+    came_from = request.params.get('came_from', referrer)
+    message = ''
+    login = 'admin'
+    password = ''
+    from utils.password import get_password
+    if 'form.submitted' in request.params:
+        login = request.params['login']
+        password = request.params['password']
+        try:
+            if get_password() == password:
+                headers = remember(request, login)
+                return HTTPFound(location = came_from, headers = headers)
+        except:
+            if USERS.get(login) == password:
+                headers = remember(request, login)
+                return HTTPFound(location = came_from, headers = headers)
+        message = 'Failed login'
+
+
+    return dict(
+        message = message,
+        url = request.application_url + '/login',
+        came_from = came_from,
+        login = login,
+        password = password,
+        )
+
+@view_config(route_name='logout')
+def logout(request):
+    headers = forget(request)
+    return HTTPFound(location = '/workerstatus', headers = headers)
+
+@view_config(route_name='password', renderer='templates/password.pt', permission='edit')
+def password(request):
+    new_password = ''
+    from utils.password import modify_password
+    if 'form.submitted' in request.params:
+        new_password = request.params['new_password']
+        modify_password(new_password)
+        return HTTPFound(location= '/logout')
+
+    return dict(
+        new_password = new_password,
+        url = request.application_url + '/password',
+        )
+
 #--------------错误处理--------------------------------    
-@view_config(route_name='errorlog', renderer='errorlog.html')
+@view_config(route_name='errorlog', renderer='errorlog.html', permission='edit')
 def error_queue_detail(request):
     """用于查看所有错误队列的详细信息和运行情况
     error_queue = 'ztq:queue:error:' + queue_name
@@ -240,7 +297,7 @@ def error_queue_detail(request):
     page = int(page) or 1
     return pageination(utils.get_all_error_jobs, page, 'error_jobs')
 
-@view_config(route_name='errorqueue', renderer='errorlog.html')
+@view_config(route_name='errorqueue', renderer='errorlog.html', permission='edit')
 def errorqueue(request):
     """用于查看单个错误队列的详细信息和运行情况
     """
@@ -268,7 +325,7 @@ def error_jobs_handler(request):
         return HTTPFound(location = '/errorlog')
     else: return Response('Invalid request')
 
-@view_config(route_name='redo_all_error_for_queue')
+@view_config(route_name='redo_all_error_for_queue', permission='edit')
 def redo_all_error_for_queue(request):    
     """重做这个错误队列所有的任务
     """
@@ -283,7 +340,7 @@ def redo_all_error_for_queue(request):
 
     return HTTPFound(location = '/taskqueues')
 
-@view_config(route_name='del_all_error_for_queue')
+@view_config(route_name='del_all_error_for_queue', permission='edit')
 def del_all_error_for_queue(request):    
     """删除这个错误队列所有的任务
     """
