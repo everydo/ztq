@@ -1,3 +1,4 @@
 include *.txt
-include worker.ini
-recursive-include ztq_worker/system_info *.vbs
+include *.md
+include ztq_worker/system_info/*.py
+include ztq_worker/system_info/*.vbs

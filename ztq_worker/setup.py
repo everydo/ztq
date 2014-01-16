@@ -7,7 +7,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 setup (
     name='ztq_worker',
-    version='1.1',
+    version='1.2',
     author = "xutaozhe",
     author_email = "xutaozhe@zopen.cn",
     description=u"Zopen Task Queue Worker",
@@ -23,8 +23,8 @@ setup (
         'Topic :: Internet :: WWW/HTTP',
         ],
     packages = ['ztq_worker'],
-    package_dir={'ztq_worker': 'ztq_worker'},
-    package_data={'ztq_worker': ['system_info/*.vbs'] },
+    #package_dir={'ztq_worker': 'ztq_worker'},
+    #package_data={'ztq_worker': ['system_info/*.vbs'] },
     data_files=[('config', ['worker.ini']),],
     include_package_data = True,
     install_requires = [

@@ -1,5 +1,6 @@
 include *.txt
 include app.ini
+include ztq_console/utils/*.py
 recursive-include ztq_console/templates *.html
 recursive-include ztq_console/static *.js *.css
 recursive-include ztq_console/static/images *.gif *.jpg
