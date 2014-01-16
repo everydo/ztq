@@ -12,7 +12,7 @@ if not os.sys.platform.startswith('win'):
     requires.append('hiredis')
 
 setup(name='ztq_core',
-      version = '1.0dev',
+      version = '1.1',
       author="edo",
       author_email="service@everydo.com",
       url="http://everydo.com/",

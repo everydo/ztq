@@ -120,9 +120,9 @@ class JobThread(threading.Thread):
         task['process'] = {'ident':self.ident}
         thread_context.job = task
         try:
-            self.run_task = ztq_core.task_registry[task['func']]
             # started report
             report_job(comment='start the job')
+            self.run_task = ztq_core.task_registry[task['func']]
 
             try:
                 self.run_task(*task['args'], **task['kw'])

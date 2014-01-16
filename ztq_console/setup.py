@@ -9,7 +9,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 requires = ['pyramid', 'WebError', 'pyramid_jinja2','ztq_core' ]
 
 setup(name='ztq_console',
-      version='1.0dev',
+      version='1.1',
       description='Zopen Task Queue Console',
       long_description=README + '\n\n' +  CHANGES,
       license = "MIT",
