@@ -123,16 +123,10 @@ class JobThread(threading.Thread):
             # started report
             report_job(comment='start the job')
             self.run_task = ztq_core.task_registry[task['func']]
+            self.run_task(*task['args'], **task['kw'])
 
-            try:
-                self.run_task(*task['args'], **task['kw'])
-            except TypeError:
-                # keyword must string is a bug in python
-                if sys.version[:5] < '2.6.5':
-                    raise Exception,("We not supported %s version of python,"
-                        "Please update it to 2.6.5 or later."%sys.version[:5])
-                else:
-                    raise
+            task['runtime']['return'] = 0
+            task['runtime']['reason'] = 'success'
 
             if task.get('callback', None):
                 callback_args = task.get('callback_args', ())
@@ -160,9 +154,6 @@ class JobThread(threading.Thread):
 
         # 任务结束，记录日志
         task['runtime']['end'] = int( time.time() )
-        if not 'reason' in task['runtime']:
-            task['runtime']['return'] = 0
-            task['runtime']['reason'] = 'success'
         ztq_core.get_work_log_queue().push(task)
         # 删除服务器的转换进程状态信息
         job_state = ztq_core.get_job_state(task['runtime']['worker'])
