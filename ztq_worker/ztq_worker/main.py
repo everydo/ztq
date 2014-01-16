@@ -21,6 +21,12 @@ def main():
     active_config = server.get('active_config', 'false')
 
     # 动态注册task
+    for module in server['modules'].split():
+        try:
+            __import__(module)
+        except ImportError:
+            modules = module.split('.')
+            __import__(modules[0], globals(), locals(), modules[1])
 
     # 连结服务器
     ztq_core.setup_redis('default', host=server['host'], port=int(server['port']), db=int(server['db']))
