@@ -17,6 +17,7 @@ def main():
     init_config(conf_file)
     server = get_configs('server')
 
+
     alias = safe_get_host('server', 'alias')
     active_config = server.get('active_config', 'false')
 
@@ -29,7 +30,15 @@ def main():
             __import__(modules[0], globals(), locals(), modules[1])
 
     # 连结服务器
-    ztq_core.setup_redis('default', host=server['host'], port=int(server['port']), db=int(server['db']))
+    redis_host = os.environ.get('DB_PORT_6379_TCP_ADDR') # docker启动环境变量
+    if not redis_host:
+        redis_host = server['host']
+        redis_port = int(server['port'])
+        redis_db = int(server['db'])
+    else:
+        redis_port = 6379
+        redis_db = 0
+    ztq_core.setup_redis('default', host=redis_host, port=redis_port, db=redis_db)
 
     # 开启一个命令线程
     command_thread = CommandThread(worker_name=alias)
