@@ -2,6 +2,7 @@
 from pyramid.config import Configurator
 import pyramid_jinja2
 import ztq_core
+import os
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from ztq_console.utils import models
