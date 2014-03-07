@@ -60,7 +60,7 @@ class JobThread(threading.Thread):
     def run(self):
         """ 阻塞方式找到任务，并自动调用"""
         # 如果上次有任务在运行还没结束，重新执行
-        jobs = ztq_core.get_job_state(CONFG['server']['alias'])
+        jobs = ztq_core.get_job_state(CONFIG['server']['alias'])
         if self.name in jobs:
             self.start_job(jobs[self.name])
 

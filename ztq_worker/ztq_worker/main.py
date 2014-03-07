@@ -2,7 +2,7 @@
 
 import sys, os
 from command_thread import CommandThread
-from config_manager import init_config
+from config_manager import read_config_file
 from command_execute import init_job_threads, set_job_threads
 from system_info import get_ip
 
@@ -40,9 +40,11 @@ def main(config):
     ztq_core.setup_redis('default', host=redis_host, port=redis_port, db=redis_db)
 
     # 开启一个命令线程
-    alias = server['alias']
+    alias = server.get('alias', '')
     if not alias:
         alias = get_ip()
+        server['alias'] = alias
+
     command_thread = CommandThread(worker_name=alias)
 
     sys.stdout.write('Starting server in PID %s\n'%os.getpid())
