@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from config_manager import safe_get_host
+from config_manager import CONFIG
 from command_execute import report, kill_transform, cancel_transform, set_job_threads
 from threading import Thread
 import time
@@ -12,7 +12,7 @@ class CommandThread(Thread):
     def __init__(self, worker_name=''):
         super(CommandThread, self).__init__()
         self.login_time = int(time.time())
-        self.worker_name = worker_name or safe_get_host('server', 'alias')
+        self.worker_name = worker_name or CONFIG['server']['alias']
 
     def init(self):
         """ 开机初始化工作 """
@@ -23,7 +23,7 @@ class CommandThread(Thread):
             reboot = True
         # 记录系统日志
         system_log = ztq_core.get_system_log_queue()
-        system_log.push(dict( host=safe_get_host('server', 'alias'),
+        system_log.push(dict( host=CONFIG['server']['alias'],
                               alias=self.worker_name,
                               type=reboot and 'reboot' or 'power',
                               timestamp=self.login_time,))

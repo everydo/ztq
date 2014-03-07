@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 #from zopen.transform import set_drive_config
-from config_manager import safe_get_host, set_config
+from config_manager import CONFIG
 from job_thread_manager import JobThreadManager
 from buffer_thread import BufferThread
 from system_info import get_cpu_style, get_cpu_usage, get_mem_usage
@@ -59,10 +59,11 @@ def init_job_threads(config_dict):
     for queue_name, values in config_dict.items():
         sleeps = [str(x['interval']) for x in values]
         config[queue_name] = ','.join(sleeps)
-    set_config(config, 'queues')
+
+    CONFIG['queues'].update(config)
 
     # 将一些信息补全，让监视界面认为这个worker已经启动
-    alias = safe_get_host('server', 'alias')
+    alias = CONFIG['server']['alias']
     # 初始化
     dispatcher_config = ztq_core.get_dispatcher_config()
     if not dispatcher_config: 
@@ -86,7 +87,7 @@ def report(start_time):
     cpu_style = get_cpu_style()
     cpu_percent = get_cpu_usage() 
     mem_percent, mem_total = get_mem_usage()
-    ip = safe_get_host('server', 'alias')
+    ip = CONFIG['server']['alias']
 
     traceback_dict = {}
     for thread_id, frame in sys._current_frames().items():

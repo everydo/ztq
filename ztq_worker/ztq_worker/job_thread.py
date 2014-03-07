@@ -4,7 +4,7 @@ import time, sys
 import traceback
 import logging
 
-from config_manager import safe_get_host, CONFIG
+from config_manager import CONFIG
 import ztq_core
 
 thread_context = threading.local()
@@ -60,7 +60,7 @@ class JobThread(threading.Thread):
     def run(self):
         """ 阻塞方式找到任务，并自动调用"""
         # 如果上次有任务在运行还没结束，重新执行
-        jobs = ztq_core.get_job_state(safe_get_host('server', 'alias'))
+        jobs = ztq_core.get_job_state(CONFG['server']['alias'])
         if self.name in jobs:
             self.start_job(jobs[self.name])
 
@@ -113,7 +113,7 @@ class JobThread(threading.Thread):
 
     def start_job(self, task):
         self.start_job_time = int(time.time())
-        task['runtime'].update({'worker': safe_get_host('server', 'alias'),
+        task['runtime'].update({'worker': CONFIG['server']['alias'],
                                 'thread': self.getName(),
                                 'start': self.start_job_time, })
         # 记录当前在做什么
