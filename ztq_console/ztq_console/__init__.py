@@ -15,12 +15,6 @@ def main(global_config, redis_host='127.0.0.1', redis_port='6379', \
     """ This function returns a Pyramid WSGI application.
     """
 
-    _redis_host = os.environ.get('DB_PORT_6379_TCP_ADDR')
-    if _redis_host is not None:
-        redis_host = _redis_host
-        redis_db = 0
-        redis_port = 6379
-
     # 初始化Redis连接
     ztq_core.setup_redis('default', redis_host, port=int(redis_port), db=int(redis_db),)
     # 初始化权重数据数据,如果权重配置已经存在则pass
