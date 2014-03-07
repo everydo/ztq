@@ -34,7 +34,6 @@ def register_batch_queue(queue_name, batch_size, batch_func=None):
 
         可以让队列在完成batch_size 后，执行一次 batch_func
     """
-    set_config(
-            config={queue_name:{'batch_size':batch_size, 'batch_func':batch_func}}, 
-            section="batch_queue",
-            )
+    CONFIG.setdefault('batch_queue', {}).update(
+                {queue_name:{'batch_size':batch_size, 'batch_func':batch_func}})
+
