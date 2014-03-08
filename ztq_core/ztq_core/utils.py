@@ -1,6 +1,7 @@
 #coding:utf-8
 from async import async
 import redis_wrap
+import urllib
 from cron import has_cron, add_cron
 
 @async(queue='clock-0')
@@ -13,4 +14,12 @@ def set_bgrewriteaof():
     # 自动定时压缩reids
     if not has_cron(bgrewriteaof):
         add_cron({'hour':1}, bgrewriteaof)
+
+@async(queue='urlopen')
+def async_urlopen(url, params=None):
+    try:
+        urllib.urlopen(url, params) # use POST method
+    except IOError:
+        raise IOError('Could not connected to %s' % url)
+
 
