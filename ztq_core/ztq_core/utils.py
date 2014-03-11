@@ -1,10 +1,10 @@
 #coding:utf-8
 from async import async
 import redis_wrap
-import urllib
+import urllib2
 from cron import has_cron, add_cron
 
-@async(queue='clock-0')
+async(queue='clock')
 def bgrewriteaof():
     """ 将redis的AOF文件压缩 """
     redis = redis_wrap.get_redis()
@@ -18,7 +18,7 @@ def set_bgrewriteaof():
 @async(queue='urlopen')
 def async_urlopen(url, params=None):
     try:
-        urllib.urlopen(url, params) # use POST method
+        urllib2.urlopen(url, params) # use POST method
     except IOError:
         raise IOError('Could not connected to %s' % url)
 
