@@ -18,8 +18,8 @@ def set_bgrewriteaof():
 @async(queue='urlopen')
 def async_urlopen(url, params=None):
     try:
-        urllib2.urlopen(url, params) # use POST method
+        # 将unicode转换成utf8
+        urllib2.urlopen(url.encode('utf-8', params) # use POST method
     except IOError:
         raise IOError('Could not connected to %s' % url)
-
 
