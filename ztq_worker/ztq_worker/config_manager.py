@@ -6,7 +6,8 @@ from ConfigParser import ConfigParser
 from system_info import get_ip
 
 # 读取配置文件（app.ini），保存到CONFIG中，实际使用的都是CONFIG
-CONFIG = {}
+CONFIG = {'server':{'alias':get_ip()},
+          'queues':{} }
 
 def read_config_file(location=None):
     """ 初始化配置管理
