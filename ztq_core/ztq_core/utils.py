@@ -19,7 +19,7 @@ def set_bgrewriteaof():
 def async_urlopen(url, params=None):
     try:
         # 将unicode转换成utf8
-        urllib2.urlopen(url.encode('utf-8', params))
+        urllib2.urlopen(url.encode('utf-8'), params)
     except IOError:
         raise IOError('Could not connected to %s' % url)
 
