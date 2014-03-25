@@ -146,7 +146,7 @@ class JobThread(threading.Thread):
                 callback_args = task.get('fcallback_args', ())
                 callback_kw = task.get('fcallback_kw', {})
                 callback_kw['return_code'] = return_code
-                callback_kw['return_msg'] = reason[-1]
+                callback_kw['return_msg'] = unicode(reason[-1], 'utf-8', 'ignore')
                 ztq_core.push_task(task['fcallback'], *callback_args, **callback_kw)
             # 在终端打印错误信息
             #reason.insert(0, str(datetime.datetime.today()) + '\n')
