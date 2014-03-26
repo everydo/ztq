@@ -84,7 +84,7 @@ class JobThread(threading.Thread):
                         from_right=self.from_right
                         )
             except ztq_core.ConnectionError:
-                print 'ERROR: Not connected the server\n'
+                logger.error('ERROR: Not connected the server')
                 task = None
                 time.sleep(3)
 
