@@ -51,6 +51,10 @@ class CommandThread(Thread):
                     kill_transform(pid=command['pid'], timestamp=command['timestamp'])
                 elif command['command'] == 'cancel':
                     cancel_transform(pid=command['pid'], timestamp=command['timestamp'])
+            except ztq_core.ConnectionError:
+                print 'ERROR: Not connected the server\n'
+                time.sleep(3)
+
             except KeyboardInterrupt:
                 import os
                 # 实际上调用的是command_execute.clear_thread
