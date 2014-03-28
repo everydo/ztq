@@ -47,10 +47,10 @@ def workers_view(request):
     """后台管理首页
     传出参数:worker的相关信息,各个队列的工作情况
     """
-    
+
     workers = utils.get_worker_list()    
     return {'workers':workers}  
-    
+
 @view_config(name='syslog', permission='edit')
 @view_config(name='workerlog', permission='edit')
 @view_config(name='errorlog', permission='edit')
