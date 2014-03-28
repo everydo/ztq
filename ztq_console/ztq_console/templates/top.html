@@ -8,7 +8,25 @@
     <div id='header'>
         <h1>{{title}}</h1>
         <div class="powered">
-            Powered by <a href="http://everydo.com/" target="_blank">Everydo.com</a>
+          {% if servers %}
+            <form action="/switch_redis.html" method="POST" target="_parent">
+            <span>当前监控的服务：</span>
+            <select name="redis_name">
+                {% for server in servers %}
+                     {% if server['name'] == current_redis%}
+                         <option value ="{{server['name']}}" selected='selected'>{{server['title']}}</option>
+
+                      {% else %}
+                         <option value ="{{server['name']}}" >{{server['title']}}</option>
+
+                      {% endif %}   
+                {% endfor %}
+            </select>
+            <input type="submit" value="切换"/>
+            </form>
+          {% endif %}   
+
+
         </div>
         <div class="clear"></div>
    </div>

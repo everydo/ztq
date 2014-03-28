@@ -12,8 +12,14 @@ import ztq_core
 import utils 
 import urllib
 from utils.security import USERS
-
+current_redis = None
 MENU_CONFIG = {'title':u'ZTQ队列监控后台',
+               'servers':[
+                          #{'name':'oc', 'host':'192.168.1.115', 'port':60207, 'db':1, 'title':'OC'},
+                          #{'name':'wo', 'host':'192.168.1.115', 'port':60206, 'db':1, 'title':'WO'},
+                          #{'name':'viewer', 'host':'192.168.1.115', 'port':60208, 'db':0, 'title':'Viewer'},
+                          ],
+               'current_redis':'oc',
                'links':[('/workerstatus', u'工作状态'),
                      ('/taskqueues',u'工作队列'),
                      ('/errorlog',u'错误清单'),
@@ -77,6 +83,22 @@ def worker_log_view(request):
     page = int(page) or 1
 
     return pageination(utils.get_worker_log, page, 'worker_log')
+
+#--------------切换Redis--------------------------------    
+@view_config(name='switch_redis.html', permission='edit')
+def switch_redis(request):
+    """ 切换redis
+    """
+    redis_key = request.params.get('redis_name', '')
+    for server in MENU_CONFIG['servers']:
+        if server['name'] == redis_key:
+            ztq_core.setup_redis('default', host=server['host'], port=server['port'], db=server.get('db', 1))
+            MENU_CONFIG['current_redis'] = redis_key
+            break
+
+    route_name = request.view_name
+    return HTTPFound(location="/")
+
 
 #--------------调度管理--------------------------------
 def config_worker(request):
