@@ -26,7 +26,7 @@ from task import (
 
 from model import *
 
-from cron import add_cron, has_cron, remove_cron
+from cron import add_cron, has_cron, remove_cron, start_cron
 
 from async import async, enable_transaction, ping_task, prepare_task
 
