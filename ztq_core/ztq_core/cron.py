@@ -83,4 +83,7 @@ class CronThread(Thread):
             return False
         return True
 
-
+def start_cron():
+    cron_thread = CronThread()
+    cron_thread.setDaemon(True)
+    cron_thread.start()
