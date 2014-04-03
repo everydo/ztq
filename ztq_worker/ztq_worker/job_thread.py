@@ -136,7 +136,10 @@ class JobThread(threading.Thread):
         except Exception, e:
             reason = traceback.format_exception(*sys.exc_info())
             # 将错误信息记录到服务器
-            return_code = str(e.args[0]) if len(e.args) > 1 else 300
+            try:
+                return_code = str(e.args[0]) if len(e.args) > 1 else 300
+            except:
+                return_code = 300
             task['runtime']['return'] = return_code
             task['runtime']['reason'] = reason[-11:]
             task['runtime']['end'] = int( time.time() )
