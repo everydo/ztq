@@ -83,8 +83,12 @@ class JobThread(threading.Thread):
                         timeout=queue_tiemout, 
                         from_right=self.from_right
                         )
-            except ztq_core.ConnectionError:
-                logger.error('ERROR: Not connected the server')
+            except ztq_core.ConnectionError, e:
+                logger.error('ERROR: redis connection error: %s' % str(e))
+                time.sleep(3)
+                continue
+            except ztq_core.ResponseError, e:
+                logger.error('ERROR: redis response error: %s' % str(e))
                 time.sleep(3)
                 continue
 

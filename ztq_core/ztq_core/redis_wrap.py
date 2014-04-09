@@ -10,6 +10,7 @@ except :
 import UserDict, UserList
 
 ConnectionError = redis.exceptions.ConnectionError
+ResponseError = redis.exceptions.ResponseError
 
 DEFAULT_ENCODING = 'UTF-8' # sys.getdefaultencoding()
 #--- System related ----------------------------------------------

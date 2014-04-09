@@ -9,7 +9,8 @@ from redis_wrap import (
         set_key, 
         get_queue, 
         get_dict, 
-        ConnectionError
+        ConnectionError,
+        ResponseError
         )
 
 from task import (

@@ -54,8 +54,11 @@ class CommandThread(Thread):
                     kill_transform(pid=command['pid'], timestamp=command['timestamp'])
                 elif command['command'] == 'cancel':
                     cancel_transform(pid=command['pid'], timestamp=command['timestamp'])
-            except ztq_core.ConnectionError:
-                logger.error('ERROR: Not connected the server')
+            except ztq_core.ConnectionError, e:
+                logger.error('ERROR: redis connection error: %s' % str(e))
+                time.sleep(3)
+            except ztq_core.ResponseError, e:
+                logger.error('ERROR: redis response error: %s' % str(e))
                 time.sleep(3)
 
             except KeyboardInterrupt:
