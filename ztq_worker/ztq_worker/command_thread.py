@@ -3,8 +3,11 @@
 from config_manager import CONFIG
 from command_execute import report, kill_transform, cancel_transform, set_job_threads
 from threading import Thread
+import logging
 import time
 import ztq_core
+
+logger = logging.getLogger("ztq_worker")
 
 class CommandThread(Thread):
     """ 监视命令队列，取得命令, 执行命令"""
@@ -52,7 +55,7 @@ class CommandThread(Thread):
                 elif command['command'] == 'cancel':
                     cancel_transform(pid=command['pid'], timestamp=command['timestamp'])
             except ztq_core.ConnectionError:
-                print 'ERROR: Not connected the server\n'
+                logger.error('ERROR: Not connected the server')
                 time.sleep(3)
 
             except KeyboardInterrupt:

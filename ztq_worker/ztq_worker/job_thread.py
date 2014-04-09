@@ -85,8 +85,8 @@ class JobThread(threading.Thread):
                         )
             except ztq_core.ConnectionError:
                 logger.error('ERROR: Not connected the server')
-                task = None
                 time.sleep(3)
+                continue
 
             if task is None: 
                 # 没有后续任务了。执行batch_func
