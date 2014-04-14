@@ -97,17 +97,26 @@ class JobThread(threading.Thread):
                 if run_job_index > 0:
                     run_job_index = 0
                     queue_tiemout = QUEUE_TIMEOUT
-                    batch_func()
+                    try:
+                        batch_func()
+                    except Exception, e:
+                        logger.error('ERROR: batch execution error: %s' % str(e))
                 continue
 
-            self.start_job(task)
+            try:
+                self.start_job(task)
+            except Exception, e:
+                logger.error('ERROR: job start error: %s' % str(e))
 
             if batch_size > 0: 
                 if run_job_index >= batch_size - 1:
                     # 完成了一批任务。执行batch_func
                     run_job_index = 0
                     queue_tiemout = QUEUE_TIMEOUT
-                    batch_func()
+                    try:
+                        batch_func()
+                    except Exception, e:
+                        logger.error('ERROR: batch execution error: %s' % str(e))
                 else:
                     run_job_index += 1
                     queue_tiemout = -1
