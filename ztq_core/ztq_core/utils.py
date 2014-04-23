@@ -4,7 +4,7 @@ import redis_wrap
 import urllib2
 from cron import has_cron, add_cron
 
-async(queue='clock')
+@async(queue='clock')
 def bgrewriteaof():
     """ 将redis的AOF文件压缩 """
     redis = redis_wrap.get_redis()
