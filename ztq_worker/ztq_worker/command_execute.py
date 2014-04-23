@@ -51,23 +51,17 @@ def set_job_threads(config_dict):
         job_thread.sleep_time = conf['interval']
         job_thread.from_right = conf.get('from_right', True)
 
-def init_job_threads(config_dict):
-    # 启动工作线程
+def init_job_threads(config_dict, force=True):
+    # 如果首次注册，根据配置启动工作线程，否则根据之前的配置启动。
     set_job_threads(config_dict)
-    # 保存信息
-    config = {}
-    for queue_name, values in config_dict.items():
-        sleeps = [str(x['interval']) for x in values]
-        config[queue_name] = ','.join(sleeps)
-
-    CONFIG['queues'].update(config)
 
     # 将一些信息补全，让监视界面认为这个worker已经启动
     alias = CONFIG['server']['alias']
 
     # set worker config
     worker_config = ztq_core.get_worker_config()
-    worker_config[alias] = config_dict 
+    if alias not in worker_config or force:
+        worker_config[alias] = config_dict 
 
 def set_dirve( from_mime, to_mime, conf):
     """ 根据驱动配置, 更改驱动参数 """
