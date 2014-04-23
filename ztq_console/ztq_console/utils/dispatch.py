@@ -6,22 +6,23 @@
 import time
 import ztq_core 
 
-def dispatch_single_queue(queue_name, from_right=True):
+def dispatch_single_queue(queue_name, action):
     """调整特定队列, 让worker从队列头或者从队列尾获取数据
     """
     worker_config = ztq_core.get_worker_config()
     for worker_name, queue_config in worker_config.items():
         if queue_config.get(queue_name, None):
-            queue_config[queue_name] = update_queue_config(queue_config[queue_name], from_right)
+            _config = queue_config[queue_name]
+
+            # 生成新的配置信息
+            if action == 'queue_down' : 
+                _config.pop()
+            elif action == 'queue_up' : 
+                _config.append(_config[0])
+            queue_config[queue_name] = _config
+
             worker_config[worker_name]= queue_config
             send_sync_command(worker_name)
-            
-def update_queue_config(queue_config, from_right):
-    """生成新的配置信息
-    """
-    for config in queue_config:
-        config['from_right'] = from_right
-    return queue_config
 
 def send_sync_command(worker_name):
     """向转换器下达同步指令

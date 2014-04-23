@@ -178,17 +178,14 @@ def taskqueue(request):
     return {'jobs':jobs, 'queue_name':queue_id}    
 
 def config_queue(request):
-    """管理队列权重,提升队列权重或降低队列权重
+    """管理队列线程数量
        传入参数:http://server/taskqueues/q01/config?action=queue_down
     """
     queue_id = request.matchdict['id']
     url_action = request.params.get('action','')
 
     # 根据操作类型进行权重调整,
-    if url_action == 'from_right' : 
-        utils.dispatch_single_queue(queue_id, from_right=True)
-    elif url_action == 'from_left' : 
-        utils.dispatch_single_queue(queue_id, from_right=False)   
+    utils.dispatch_single_queue(queue_id, action=url_action)
     return HTTPFound(location = '/taskqueues') 
   
 @view_config(route_name='taskqueue_action', permission='edit')

@@ -22,10 +22,7 @@
             <col style="width: 12em;" />
             <tr>
                 <th>队列</th>
-                <!--
-                <th width="300px">标签</th>
                 <th>队列方向</th>
-                -->
                 <th>任务数</th>
                 <th>缓存任务数</th>
                 <th>任务首个时间</th>
@@ -39,17 +36,7 @@
             {% for task_queue in task_queues %}
                 <tr>
                   <td><pre><strong>{{ task_queue['name'] }}<strong></pre></td>
-                  <!--
-                  <td><div>{% for tag in task_queue['tags'] %} <div style="float:left; margin-right:1em;">{{tag}}</div> {% endfor %}</div></td>
                   <td><pre><a href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'queue_up'}) }}">↑</a> <a href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'queue_down'}) }}">↓</a></pre></td>
-                  <td>
-                      {% if task_queue['from_right'] %}
-                          <a title="点击切换" href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'from_left'}) }}">首</a> 
-                      {% else %}
-                          <a title="点击切换" href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'from_right'}) }}">尾</a>
-                      {% endif %}
-                  </td>
-                  -->
                   
                   <td>
                       {% if task_queue['length'] == 0 %}
