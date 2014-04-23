@@ -12,6 +12,7 @@ import ztq_core
 import utils 
 import urllib
 from utils.security import USERS
+
 current_redis = None
 MENU_CONFIG = {'title':u'ZTQ队列监控后台',
                'servers':[
@@ -184,8 +185,9 @@ def config_queue(request):
     queue_id = request.matchdict['id']
     url_action = request.params.get('action','')
 
-    # 根据操作类型进行权重调整,
-    utils.dispatch_single_queue(queue_id, action=url_action)
+    # 对所有的worker的队列调整数量
+    for worker_name in ztq_core.get_worker_config():
+        utils.update_queue_threads(work_name, queue_id, action=url_action)
     return HTTPFound(location = '/taskqueues') 
   
 @view_config(route_name='taskqueue_action', permission='edit')
