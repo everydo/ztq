@@ -72,7 +72,6 @@ def get_taskqueues_list():
         if error_first_job:
             task_queue['error_end'] = datetime.datetime.fromtimestamp(error_first_job['runtime'].get('create', 0))
 
-        task_queue['weight'] = 0
         # 获取worker工作线程配置
         workers_config = ztq_core.get_worker_config()
         task_queue['from_right'] = True
@@ -150,7 +149,6 @@ def get_worker_list():
             datetime.datetime.fromtimestamp(worker_status['started'])
         worker_status['_timestamp'] = \
             datetime.datetime.fromtimestamp(worker_status['timestamp'])
-        worker_status['_worker_weight'] = 0
 
         # 检查worker是否在工作
         cmd_queue = ztq_core.get_command_queue(worker_name)
