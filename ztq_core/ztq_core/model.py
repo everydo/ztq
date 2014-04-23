@@ -206,30 +206,11 @@ def get_job_state(worker_job_name):
     prefix = 'ztq:state:job:%s:' % worker_job_name
     return get_dict(prefix)
 
-# config -------------------------------------------------------------------
-def get_dispatcher_config():
-    """ 用户设定的一组转换参数，在redis中的存放如下信息::
-     {'queue_weight':{ # 原子转换队列权重
-         'q01':3, 
-         'q02':3}
-      'worker_weight':{ # 转换器权重
-        'w01':3, 
-        'w02':0, # 权重为0就禁用
-        'w03':4}
-     }
-    """
-    prefix = 'ztq:config:dispatcher'
-    return get_key(prefix)
-
-def set_dispatcher_config(value):
-    prefix = 'ztq:config:dispatcher'
-    return set_key(prefix, value)
-
 def get_queue_config():
     """记录queue的基本信息
     {'title':'sys_cron-0',  #可选
-    'tags':(['sys_cron']),  #可选
-    'weight':5}             #可选
+     'tags':(['sys_cron']),  #可选
+    }             #可选
     """
     prefix = 'ztq:config:queue:'
     return get_dict(prefix)

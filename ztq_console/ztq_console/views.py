@@ -106,34 +106,15 @@ def config_worker(request):
     """
     url_action = request.params.get('action','')
 
-    dispatcher_config = ztq_core.get_dispatcher_config()
-    worker_weight = dispatcher_config['worker_weight']
     # 获取用户请求操作
     worker_id = request.matchdict['id']
-    if url_action == 'stop_worker': 
-        #停止worker
-        worker_weight[worker_id] = 0
-    elif url_action == 'enable': 
-        #启用worker
-        worker_weight[worker_id] = 5
-    elif url_action == 'worker_down' : 
-        #降低worker权重
-        worker_weight[worker_id] -= 1
-        if worker_weight[worker_id] < 1: worker_weight[worker_id] = 1
-    elif url_action == 'worker_up' : 
-        #提升worker权重
-        worker_weight[worker_id] += 1
-        if worker_weight[worker_id] >10: worker_weight[worker_id] = 10
-    elif url_action == 'delete': 
+    if url_action == 'delete': 
         #删除还没启用的worker,删除操作不会导致调度配置更新
-        if worker_id in worker_weight: # 没有启用的情况
-            worker_weight.pop(worker_id)
         workers_dict = ztq_core.get_worker_state()
         del workers_dict[worker_id]
         worker_job = ztq_core.get_job_state(worker_id)
         for job_name, job_status in worker_job.items():
             del worker_job[job_name]
-        ztq_core.set_dispatcher_config(dispatcher_config)
         return HTTPFound(location = '/workerstatus')
     elif url_action == 'update':
         # 发报告指令到各命令队列让worker报告自身状态
@@ -143,9 +124,6 @@ def config_worker(request):
                 utils.send_command(worker_name, 'report')
                 time.sleep(1)
                 return HTTPFound(location = '/workerstatus')
-    # 更新调度策略并进行调度        
-    ztq_core.set_dispatcher_config(dispatcher_config)
-    utils.dispatch()
     return HTTPFound(location = '/workerstatus')
 
 def stop_working_job(request):
@@ -205,24 +183,9 @@ def config_queue(request):
     """
     queue_id = request.matchdict['id']
     url_action = request.params.get('action','')
-    dispatcher_config = ztq_core.get_dispatcher_config()
-    queue_weight = dispatcher_config['queue_weight']
 
     # 根据操作类型进行权重调整,
-    if url_action == 'queue_down' : 
-        queue_weight[queue_id] -= 1
-        # 队列权重最少为1
-        if queue_weight[queue_id] < 0: queue_weight[queue_id] = 0
-        # 更新调度策略并进行调度
-        ztq_core.set_dispatcher_config(dispatcher_config)
-        utils.dispatch()
-    elif url_action == 'queue_up' : 
-        queue_weight[queue_id] += 1
-        if queue_weight[queue_id] > 10: queue_weight[queue_id] = 10
-        # 更新调度策略并进行调度
-        ztq_core.set_dispatcher_config(dispatcher_config)
-        utils.dispatch()
-    elif url_action == 'from_right' : 
+    if url_action == 'from_right' : 
         utils.dispatch_single_queue(queue_id, from_right=True)
     elif url_action == 'from_left' : 
         utils.dispatch_single_queue(queue_id, from_right=False)   

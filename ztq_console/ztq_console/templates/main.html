@@ -17,7 +17,6 @@
             <th>上次启动时间</th>
             <th>上报时间</th>
             <th>当前工作</th>
-            <th>工作权重</th>
             <th>状态</th>
             <th>操作</th>
             </tr>
@@ -32,17 +31,15 @@
               <td><pre>{{ worker['cpu_percent'] }}</pre></td>
               <td><pre>共 {{ worker['mem_total'] }} | 已用 {{ worker['mem_percent'] }}</pre></td>
               <td><pre>{{ worker['_started'] }}</pre></td>
-              {% if worker['_worker_weight'] %}
+              {% if worker['_active'] == 'work' %}
                   <td><pre>{{ worker['_timestamp'] }}</pre></td>
                   <! 工作端正在进行哪些任务>
                   <td><pre>{% for thread in worker['_threads'] %}{{thread['_name']}}:<br>{{thread['_comment']}}. {{thread['_take_time']}}秒前 <a href="{{ gen_url('worker', id=worker['_worker_name'], thread=thread['_name'], pid=thread['_pid']) }}">Kill</a><br>{% endfor %}</pre></td>
-                  <td><pre>{{ worker['_worker_weight'] }} <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'worker_up'}) }}">↑</a> <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'worker_down'}) }}">↓</a></pre></td>             
                   <td><pre>{{ worker['_active'] }}</pre></td>
                   <td><pre><a href="{{ gen_url('end_thread', id=worker['_worker_name'], thread=worker['_threads']['_name'], pid=worker['_threads']['_pid']) }}">停止</a><br></pre></td>    
               {% else %}
                   <td><pre>{{ worker['_timestamp'] }}</pre></td>
                   <td><pre></pre></td>
-                  <td><pre>{{ worker['_worker_weight'] }}</pre></td>
                   <td><pre>{{ worker['_active'] }}</pre></td>
                   <td><pre>
                         <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'delete'}) }}">删除</a>

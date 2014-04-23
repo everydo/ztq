@@ -10,27 +10,13 @@ from ztq_console.utils.security import groupfinder
 
 
 def main(global_config, redis_host='127.0.0.1', redis_port='6379', \
-        redis_db='0', frs_root='frs', init_dispatcher_config='true', \
+        redis_db='0', frs_root='frs', \
         frs_cache='frscache', addon_config=None, work_enable=True, **settings):
     """ This function returns a Pyramid WSGI application.
     """
 
     # 初始化Redis连接
     ztq_core.setup_redis('default', redis_host, port=int(redis_port), db=int(redis_db),)
-    # 初始化权重数据数据,如果权重配置已经存在则pass
-    if init_dispatcher_config.lower() == 'true':
-        # init_dispatcher_config 是因为控制台可能没有运行服务， 这里去读取redis数据，会导致控制台起不来
-        dispatcher_config = ztq_core.get_dispatcher_config()
-        if not dispatcher_config: 
-            dispatcher_config = weight = {'queue_weight':{},'worker_weight':{}}
-            ztq_core.set_dispatcher_config(weight)
-
-        queue_weight = dispatcher_config['queue_weight']
-        if not queue_weight:
-            queues_list = ztq_core.get_queue_config()
-            for queue_name, queue_config in queues_list.items():
-                queue_weight[queue_name] = queue_config.get('weight', 0)
-            ztq_core.set_dispatcher_config(dispatcher_config)
 
     # # 开启后台服务
     # 初始化fts_web配置

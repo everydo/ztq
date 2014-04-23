@@ -38,13 +38,6 @@
                       <td><pre>{{ worker['_started'] }}</pre></td>
                           <! 工作端正在进行哪些任务>
                       <td><pre>{{ worker['_timestamp'] }}</pre></td>
-                      <!--
-                      <td>
-                            <strong>{{ worker['_worker_weight'] }}</strong> &nbsp;
-                            <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'worker_up'}) }}"><img src="{{ static_url('ztq_console:static/images/up.gif') }}" alt="up ↑" title="up ↑" /></a> &nbsp;
-                            <a href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'worker_down'}) }}"><img src="{{ static_url('ztq_console:static/images/down.gif') }}" alt="down ↓" title="down ↓" /></a>
-                      </td>
-                      --->
                       <td>
                           {% if worker['_active'] == 'shutdown' %}
                               <pre> 下线 </pre>
@@ -54,13 +47,12 @@
                               <pre> 运转 </pre>
                           {% endif %}
                       </td>
-                      {% if worker['_worker_weight'] %}
+                      {% if worker['_active'] == 'work' %}
                           <td rowspan="2" class="no-wrap">
                               <a class="bt" href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'update'}) }}">刷新</a>
                               <a class="bt" href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'stop_worker'}) }}">停止</a>
                           </td>
                       {% else %}
-                          <!--<td><pre>{{ worker['_worker_weight'] }}</pre></td>-->
                           <td rowspan="2" class="no-wrap">
                             <a class="bt" href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'enable'}) }}">启用</a>
                             <a class="bt" href="{{ gen_url('worker', id=worker['_worker_name'], _query={'action':'delete'}) }}" onclick="return confirm('确认该 Worker 不再使用才可以删除，确定？')">删除</a>

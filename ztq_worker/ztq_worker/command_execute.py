@@ -64,15 +64,7 @@ def init_job_threads(config_dict):
 
     # 将一些信息补全，让监视界面认为这个worker已经启动
     alias = CONFIG['server']['alias']
-    # 初始化
-    dispatcher_config = ztq_core.get_dispatcher_config()
-    if not dispatcher_config: 
-        dispatcher_config = {'queue_weight':{},'worker_weight':{}}
-    # set dispatcher config
-    worker_weight = dispatcher_config['worker_weight']
-    if not worker_weight.get(alias, 0):
-        worker_weight[alias] = 5 
-        ztq_core.set_dispatcher_config(dispatcher_config)
+
     # set worker config
     worker_config = ztq_core.get_worker_config()
     worker_config[alias] = config_dict 

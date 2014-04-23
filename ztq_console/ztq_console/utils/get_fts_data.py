@@ -41,8 +41,6 @@ def get_worker_log(sindex=None, eindex=None):
         
 def get_taskqueues_list():
     # 队列情况列表
-    dispatcher_config = ztq_core.get_dispatcher_config()
-    queue_weight = dispatcher_config['queue_weight']
     queues_list = ztq_core.get_queue_config()
 
     # 排序
@@ -74,7 +72,7 @@ def get_taskqueues_list():
         if error_first_job:
             task_queue['error_end'] = datetime.datetime.fromtimestamp(error_first_job['runtime'].get('create', 0))
 
-        task_queue['weight'] = queue_weight.get(queue_name, 0)
+        task_queue['weight'] = 0
         # 获取worker工作线程配置
         workers_config = ztq_core.get_worker_config()
         task_queue['from_right'] = True
@@ -145,8 +143,6 @@ def get_error_queue_jobs(error_queue_name, sindex=0, eindex=-1):
         yield tmp_job
 
 def get_worker_list():
-    dispatcher_config = ztq_core.get_dispatcher_config()
-    worker_weight = dispatcher_config['worker_weight']
     workers_dict = ztq_core.get_worker_state().items()
     for worker_name, worker_status in workers_dict:
         worker_status['_worker_name'] = worker_name
@@ -154,14 +150,17 @@ def get_worker_list():
             datetime.datetime.fromtimestamp(worker_status['started'])
         worker_status['_timestamp'] = \
             datetime.datetime.fromtimestamp(worker_status['timestamp'])
-        worker_status['_worker_weight'] = worker_weight.get(worker_name, 0)
+        worker_status['_worker_weight'] = 0
+
         # 检查worker是否在工作
         cmd_queue = ztq_core.get_command_queue(worker_name)
+
         # 如果指令队列不为空的话,意味着worker没工作,属于下线状态
-        if cmd_queue: worker_status['_active'] = u'shutdown'
-        elif worker_status['_worker_weight'] == 0: 
-            worker_status['_active'] = u'ldle'
-        else: worker_status['_active'] = u'work'
+        if cmd_queue: 
+            worker_status['_active'] = u'shutdown'
+        else: 
+            worker_status['_active'] = u'work'
+
         # 获取worker开了多少个线程
         worker_job = ztq_core.get_job_state(worker_name)
         worker_status['_threads'] = []
