@@ -55,10 +55,10 @@ class CommandThread(Thread):
                 elif command['command'] == 'cancel':
                     cancel_transform(pid=command['pid'], timestamp=command['timestamp'])
             except ztq_core.ConnectionError, e:
-                logger.error('ERROR: redis connection error: %s' % str(e))
+                logger.error('ERROR: redis command connection error: %s' % str(e))
                 time.sleep(3)
             except ztq_core.ResponseError, e:
-                logger.error('ERROR: redis response error: %s' % str(e))
+                logger.error('ERROR: redis command response error: %s' % str(e))
                 time.sleep(3)
 
             except KeyboardInterrupt:
@@ -66,3 +66,6 @@ class CommandThread(Thread):
                 # 实际上调用的是command_execute.clear_thread
                 os.sys.exitfunc()
                 os._exit(0)
+            except Exception, e:
+                logger.error('ERROR: redis command unknown error: %s' % str(e))
+                time.sleep(3)

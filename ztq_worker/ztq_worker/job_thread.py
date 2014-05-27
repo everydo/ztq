@@ -91,6 +91,10 @@ class JobThread(threading.Thread):
                 logger.error('ERROR: redis response error: %s' % str(e))
                 time.sleep(3)
                 continue
+            except Exception, e:
+                logger.error('ERROR: redis unknown error: %s' % str(e))
+                time.sleep(3)
+                continue
 
             if task is None: 
                 # 没有后续任务了。执行batch_func
