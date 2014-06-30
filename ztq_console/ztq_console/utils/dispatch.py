@@ -10,7 +10,7 @@ def update_queue_threads(worker_name, queue_name, action):
     """调整特定队列线程数量，可以增加或者减少
     """
     worker_config = ztq_core.get_worker_config()
-    queue_config = worker_config[queue_name]
+    queue_config = worker_config[worker_name]
     if queue_config.get(queue_name, None):
         _config = queue_config[queue_name]
 

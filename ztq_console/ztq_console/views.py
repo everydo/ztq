@@ -186,8 +186,8 @@ def config_queue(request):
     url_action = request.params.get('action','')
 
     # 对所有的worker的队列调整数量
-    for worker_name in ztq_core.get_worker_config():
-        utils.update_queue_threads(work_name, queue_id, action=url_action)
+    for worker_name in ztq_core.get_worker_config().keys():
+        utils.update_queue_threads(worker_name, queue_id, action=url_action)
     return HTTPFound(location = '/taskqueues') 
   
 @view_config(route_name='taskqueue_action', permission='edit')

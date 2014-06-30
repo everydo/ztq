@@ -35,9 +35,11 @@
           <tbody>
             {% for task_queue in task_queues %}
                 <tr>
-                  <td><pre><strong>{{ task_queue['name'] }}<strong></pre></td>
-                  <td><pre><a href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'queue_up'}) }}">↑</a> <a href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'queue_down'}) }}">↓</a></pre></td>
-                  
+                  <td><strong>{{ task_queue['name'] }}<strong></td>
+                  <td> {{ task_queue['workers'].__len__() }}
+                      <a href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'queue_up'}) }}">↑</a> 
+                      <a href="{{ gen_url('taskqueues_config', id=task_queue['name'], _query={'action':'queue_down'}) }}">↓</a></td>
+
                   <td>
                       {% if task_queue['length'] == 0 %}
                           <span> 0 </span>
