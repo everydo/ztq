@@ -18,12 +18,28 @@ SYSTEMS = {
     'default': redis.Redis(host='localhost', port=6379)
 }
 
+DISCOVER_FUNCS = {'default':None}
 
-def setup_redis(name, host, port, db=0, **kw):
+def setup_redis(name, host, port, db=0, discover_func=None, **kw):
     SYSTEMS[name] = redis.Redis(host=host, port=port, db=db, **kw)
+    DISCOVER_FUNCS[name] = discover_func
 
 def get_redis(system='default'):
     return SYSTEMS[system]
+
+def ha_redis(func):
+    """ 让redis访问高可用 """
+    def new_func(self, *args, **kw):
+        try:
+            return func(self, *args, **kw)
+        except ConnectionError, e:
+            discover_func = DISCOVER_FUNCS[self.system]
+            if discover_func is not None:
+                discover_func(self.system)
+                return func(self, *args, **kw)
+            else:
+                raise
+    return new_func
 
 #--- Decorators ----------------------------------------------
 def get_list(name, system='default',serialized_type='json'):
@@ -94,18 +110,22 @@ class ListFu(object):
         self.dumps = dump_method[serialized_type]
         self.loads = load_method[serialized_type]
         
+    @ha_redis
     def append(self, item):
         item = self.dumps(item)
         get_redis(self.system).lpush(self.name, item)
 
+    @ha_redis
     def extend(self, iterable):
         for item in iterable:
             self.append(item)
     
+    @ha_redis
     def remove(self, value):
         value = self.dumps(value)
         get_redis(self.system).lrem(self.name, value)
 
+    @ha_redis
     def pop(self, index=None):
         if index:
             raise ValueError('Not supported')
@@ -115,9 +135,11 @@ class ListFu(object):
             return item
         else: return None
 
+    @ha_redis
     def __len__(self):
         return get_redis(self.system).llen(self.name)
 
+    @ha_redis
     def __iter__(self):
         client = get_redis(self.system)
         i = 0
@@ -130,11 +152,13 @@ class ListFu(object):
                 yield self.loads(item)
             i += 30
 
+    @ha_redis
     def __getitem__(self, index):
         client = get_redis(self.system)
         value = client.lindex(self.name, index)
         return self.loads(value) if value else None
 
+    @ha_redis
     def __getslice__(self, i, j):
         client = get_redis(self.system)
         items = client.lrange(self.name, i, j)
@@ -149,12 +173,14 @@ class HashFu:
         self.dumps = dump_method[serialized_type]
         self.loads = load_method[serialized_type]
 
+    @ha_redis
     def get(self, key, default=None):
         value = get_redis(self.system).hget(self.name, key)
         try:
             return self.loads(value)
         except: return default
         
+    @ha_redis
     def items(self):
         for key in self.keys():
             # key_list 不是实时的数据
@@ -164,13 +190,16 @@ class HashFu:
 
             yield key, value
 
+    @ha_redis
     def keys(self):
         return get_redis(self.system).hkeys(self.name) or []
 
+    @ha_redis
     def values(self):
         _values = self.loads(get_redis(self.system).hvals(self.name))
         return _values or []
 
+    @ha_redis
     def pop(self, key):
         pline = get_redis(self.system).pipeline()
         pline.hget(self.name, key).hdel(self.name, key)
@@ -182,25 +211,31 @@ class HashFu:
             print 'redis hasher not match the %s key\n\n'%key
             return None
 
+    @ha_redis
     def __len__(self):
         return get_redis(self.system).hlen(self.name) or 0
 
+    @ha_redis
     def __getitem__(self, key):
         val = self.get(key)
         if not val:
             raise KeyError
         return val
 
+    @ha_redis
     def __setitem__(self, key, value):
         value = self.dumps(value)
         return get_redis(self.system).hset(self.name, key, value)
 
+    @ha_redis
     def __delitem__(self, key):
         get_redis(self.system).hdel(self.name, key)
 
+    @ha_redis
     def __contains__(self, key):
         return get_redis(self.system).hexists(self.name, key)
 
+    @ha_redis
     def update(self, new_dict, **kw):
         update = {}
 
@@ -225,27 +260,33 @@ class SetFu:
         self.dumps = dump_method[serialized_type]
         self.loads = load_method[serialized_type]
         
+    @ha_redis
     def add(self, item):
         item = self.dumps(item)
         get_redis(self.system).sadd(self.name, item)
 
+    @ha_redis
     def remove(self, item):
         item = self.dumps(item)
         get_redis(self.system).srem(self.name, item)
 
+    @ha_redis
     def pop(self, item):
         item = self.serializer.dumps(item)
         value = get_redis(self.system).spop(self.name, item)
         return self.loads(value)
 
+    @ha_redis
     def __iter__(self):
         client = get_redis(self.system)
         for item in client.smembers(self.name):
             yield self.loads(item)
 
+    @ha_redis
     def __len__(self):
         return len(get_redis(self.system).smembers(self.name))
 
+    @ha_redis
     def __contains__(self, item):
         item = self.dumps(item)
         return get_redis(self.system).sismember(self.name, item)
@@ -258,27 +299,33 @@ class DictFu:
         self.dumps = dump_method[serialized_type]
         self.loads = load_method[serialized_type]
     
+    @ha_redis
     def get(self, key, default=None):
         value = get_redis(self.system).get(self.name+key)
         try:
             return self.loads(value)
         except: return default
         
+    @ha_redis
     def set(self, key, value):
         value = self.dumps(value)
         get_redis(self.system).set(self.name+key, value)
     
+    @ha_redis
     def __delitem__(self, key):
         get_redis(self.system).delete(self.name+key)
     
+    @ha_redis
     def __len__(self):
         listkey = get_redis(self.system).keys(self.name+"*")
         return len(listkey) or 0
 
+    @ha_redis
     def keys(self):
         prefix_len = len(self.name)
         return [key[prefix_len:] for key in get_redis(self.system).keys(self.name + "*")]
 
+    @ha_redis
     def items(self):
         # XXX self.get 每次都要连结redis， 这样不好
         key_list = get_redis(self.system).keys(self.name+"*")
@@ -292,15 +339,18 @@ class DictFu:
 
             yield key_name, value
     
+    @ha_redis
     def __getitem__(self, key=''):
         val = self.get(key, None)
         if val is None:
             raise KeyError
         return val
     
+    @ha_redis
     def __setitem__(self, key, value):
         self.set(key, value)
     
+    @ha_redis
     def __contains__(self, key):
         return get_redis(self.system).exists(self.name+key)
 
@@ -309,6 +359,7 @@ class QueueFu(ListFu):
     def __init__(self, name, system, serialized_type='json'):
         super(QueueFu,self).__init__(name, system, serialized_type=serialized_type)
  
+    @ha_redis
     def push(self, item, to_left=True):
         if to_left:
             self.append(item)
@@ -316,6 +367,7 @@ class QueueFu(ListFu):
             item = self.dumps(item)
             get_redis(self.system).rpush(self.name, item)
             
+    @ha_redis
     def pop(self, timeout=0, from_right = True):
         """ 
             得到redis list 对象中的一个item，并把item 从 redis list 对象中删除
@@ -344,6 +396,7 @@ class QueueFu(ListFu):
 
         return None
      
+    @ha_redis
     def reverse(self):
         """倒序输出结果 
         """
@@ -360,6 +413,7 @@ class LimitQueueFu(QueueFu):
         super(LimitQueueFu,self).__init__(name, system, serialized_type=serialized_type)
         self.length = length - 1
         
+    @ha_redis
     def push(self, item):
         #QueueFu.push(self, item)
         #get_redis(self.system).ltrim(self.name, 0, self.length)
