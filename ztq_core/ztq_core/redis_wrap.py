@@ -18,11 +18,11 @@ SYSTEMS = {
     'default': redis.Redis(host='localhost', port=6379)
 }
 
-DISCOVER_FUNCS = {'default':None}
+RECOVER_FUNCS = {'default':None}
 
-def setup_redis(name, host, port, db=0, discover_func=None, **kw):
+def setup_redis(name, host, port, db=0, recover_func=None, **kw):
     SYSTEMS[name] = redis.Redis(host=host, port=port, db=db, **kw)
-    DISCOVER_FUNCS[name] = discover_func
+    RECOVER_FUNCS[name] = recover_func
 
 def get_redis(system='default'):
     return SYSTEMS[system]
@@ -33,9 +33,9 @@ def ha_redis(func):
         try:
             return func(self, *args, **kw)
         except ConnectionError, e:
-            discover_func = DISCOVER_FUNCS[self.system]
-            if discover_func is not None:
-                discover_func(self.system)
+            recover_func = RECOVER_FUNCS[self.system]
+            if recover_func is not None:
+                recover_func(self.system)
                 return func(self, *args, **kw)
             else:
                 raise
