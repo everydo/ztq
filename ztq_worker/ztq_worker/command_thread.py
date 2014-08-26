@@ -47,7 +47,8 @@ class CommandThread(Thread):
                     # TODO
                     #async_drive_config()
                     pass
-                elif command['command'] == 'updateworker':
+                elif command['command'] == 'updateworker' and \
+                        CONFIG['server'].get('active_config', 'false').lower() == 'true':
                     queue = ztq_core.get_worker_config()
                     set_job_threads(queue[self.worker_name])
                 elif command['command'] == 'kill':
