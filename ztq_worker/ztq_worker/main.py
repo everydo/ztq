@@ -51,24 +51,35 @@ def main(config):
 
     worker_state = ztq_core.get_worker_state()
     active_config = server.get('active_config', 'false')
+
+    # 计算那些是需要根据线上配置启动的队列
+    active_queue_config = {} 
     if active_config.lower() == 'true' and command_thread.worker_name in worker_state:
         # 如果服务器有这个机器的配置信息，需要自动启动工作线程
-        queue = ztq_core.get_worker_config()
-        if command_thread.worker_name in queue:
-            set_job_threads(queue[command_thread.worker_name])
-    elif config['queues']:
+        worker_config = ztq_core.get_worker_config()
+        active_queue_config = worker_config.get(command_thread.worker_name, {})
+
+    # 根据本地配置，启动的队列
+    local_queue_config = {}
+    if config['queues']:
         # 把worker监视队列的情况上报到服务器
         queue_config = ztq_core.get_queue_config()
         # 如果配置有queues，自动启动线程监视
-        job_threads = {}
         for queue_name, sleeps in config['queues'].items():
-            job_threads[queue_name] = [
+            # 线上配置稍后再设置
+            if queue_name in active_queue_config: continue
+
+            local_queue_config[queue_name] = [
                     {'interval': int(sleep)} for sleep in sleeps.split(',')
                     ]
             if not queue_config.get(queue_name, []):
                 queue_config[queue_name] = {'name':queue_name, 'title':queue_name, 'widget': 5}
 
-        init_job_threads(job_threads)
+        init_job_threads(local_queue_config)
+
+    # 合并线上和线下的配置
+    active_queue_config.update(local_queue_config)
+    set_job_threads(active_queue_config)
 
     loggers = config['log']
     initlog(
