@@ -15,10 +15,10 @@ def update_queue_threads(worker_name, queue_name, action):
         _config = queue_config[queue_name]
 
         # 生成新的配置信息
-        if action == 'queue_down' : 
+        if action == 'queue_down': 
             _config.pop()
         elif action == 'queue_up' : 
-            _config.append(_config[0])
+            _config.append({u'interval': 0})
         queue_config[queue_name] = _config
 
         worker_config[worker_name]= queue_config
