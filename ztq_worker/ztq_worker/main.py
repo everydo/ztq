@@ -79,7 +79,6 @@ def main(config):
     # 合并线上和线下的配置
     active_queue_config.update(local_queue_config)
     init_job_threads(active_queue_config)
-    set_job_threads(active_queue_config)
 
     loggers = config['log']
     initlog(
