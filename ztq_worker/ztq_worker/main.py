@@ -75,11 +75,10 @@ def main(config):
             if not queue_config.get(queue_name, []):
                 queue_config[queue_name] = {'name':queue_name, 'title':queue_name, 'widget': 5}
 
-        init_job_threads(local_queue_config)
 
     # 合并线上和线下的配置
     active_queue_config.update(local_queue_config)
-    set_job_threads(active_queue_config)
+    init_job_threads(active_queue_config)
 
     loggers = config['log']
     initlog(
