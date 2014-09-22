@@ -11,7 +11,7 @@ def update_queue_threads(worker_name, queue_name, action):
     """
     worker_config = ztq_core.get_worker_config()
     queue_config = worker_config[worker_name]
-    if queue_config.get(queue_name, None):
+    if queue_config.get(queue_name, None) is not None:
         _config = queue_config[queue_name]
 
         # 生成新的配置信息
