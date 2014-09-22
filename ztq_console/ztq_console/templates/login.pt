@@ -16,7 +16,7 @@
           <label>登录用户</label><input type="text" name="login" value="${login}"/>
           </li>
           <li>
-          <label>登录密码</label><input type="password" name="password" value="${password}"/>
+          <label>登录密码</label><input type="password" name="password" value="${password}"/> （初始密码是admin）
           </li>
           <li>
           <label></label><input type="submit" class="button" name="form.submitted" value="登录"/>
