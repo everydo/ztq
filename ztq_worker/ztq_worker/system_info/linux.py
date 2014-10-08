@@ -2,15 +2,10 @@
 
 from __future__ import with_statement 
 import subprocess as sp
+import psutil
 
 def get_cpu_usage():
-    with open('/proc/stat') as cpu_info:
-        result = cpu_info.readline()
-
-    user, nice, system, idle = tuple(result.split()[1:5])
-    user = int(user); nice = int(nice)
-    system = int(system); idle = int(idle)
-    cpu_usage = 1.0 * 100 * (user + nice + system) / (user + nice + system + idle)
+    cpu_usage = psutil.cpu_percent()
 
     return '%.1f%%'%cpu_usage
 
@@ -19,6 +14,10 @@ def get_mem_usage():
         mem_total = mem_info.readline()
         mem_free = mem_info.readline()
         mem_buff = mem_info.readline()
+        # 部分操作系统内核会MemAvailable一行，所以Buffers应该再取下一行文本来提取读书。
+        if not mem_buff.startswith('Buffers'):
+            mem_buff = mem_info.readline()
+
         mem_cached  = mem_info.readline()
 
     mem_total = int(mem_total.split(':', 1)[1].split()[0])
