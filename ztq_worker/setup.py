@@ -29,6 +29,7 @@ setup (
     include_package_data = True,
     install_requires = [
         "ztq_core",
+        "psutil",
         ],
     entry_points = """\
       [console_scripts]
