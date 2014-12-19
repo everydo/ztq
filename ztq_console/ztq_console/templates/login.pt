@@ -6,7 +6,7 @@
 
 <body>
     <h1>登录控制台</h1>
-    <p>进入易度控制台前，请输入登录用户和登录密码：</p>
+    <p>进入控制后台前，请输入登录用户和登录密码：</p>
     <form action="${url}" method="post">
     <fieldset>
         <legend>登录输入框</legend>
