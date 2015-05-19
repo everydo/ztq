@@ -7,7 +7,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 setup (
     name='ztq_worker',
-    version='1.3.1',
+    version='1.3.2',
     author = "xutaozhe",
     author_email = "xutaozhe@zopen.cn",
     description=u"Zopen Task Queue Worker",

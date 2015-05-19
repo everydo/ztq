@@ -2,7 +2,7 @@
 
 import os 
 
-from ConfigParser import SafeConfigParser as ConfigParser
+from ConfigParser import RawConfigParser as ConfigParser
 from system_info import get_ip
 
 # 读取配置文件（app.ini），保存到CONFIG中，实际使用的都是CONFIG
