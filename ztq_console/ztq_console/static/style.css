@@ -82,7 +82,7 @@ pre { font-family:'Courier New',sans-serif; }
 
 /* begin header*/
 #header{ border-bottom:5px solid #4396C3; padding:5px; background:url(images/header-bg.jpg) repeat-x; }
-    #header h1 { background:url(images/logo.gif) no-repeat left center; font-size:42px; line-height:60px; padding:0 0 0 60px; color:#666; float:left; }
+    #header h1 { font-size:42px; line-height:60px; padding:0 0 0 15px; color:#666; float:left; }
     .powered { float:right; color:#666; padding-top:40px; padding-right:10px}
 
 /* begin menu*/
