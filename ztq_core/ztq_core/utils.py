@@ -16,10 +16,10 @@ def set_bgrewriteaof():
         add_cron({'hour':1}, bgrewriteaof)
 
 @async(queue='urlopen')
-def async_urlopen(url, params=None):
+def async_urlopen(url, params=None, timeout=120):
     try:
         # 将unicode转换成utf8
-        urllib2.urlopen(url.encode('utf-8'), params)
+        urllib2.urlopen(url.encode('utf-8'), params, timeout=timeout)
     except IOError:
         raise IOError('Could not connected to %s' % url)
 
