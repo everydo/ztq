@@ -218,7 +218,7 @@ class HashFu:
     @ha_redis
     def __getitem__(self, key):
         val = self.get(key)
-        if not val:
+        if val is None:
             raise KeyError
         return val
 
