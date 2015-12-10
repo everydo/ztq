@@ -98,7 +98,7 @@ def cancel_transform(pid, timestamp):
     """ 取消 转换 """
     kill(pid)
 
-if os.sys.platform != 'win':
+if not os.sys.platform.startswith('win'):
     def kill(pid):
         """ kill process by pid for linux """
         # XXX 无法杀孙子进程
