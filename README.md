@@ -210,3 +210,12 @@ ZTQ是由易度云办公(http://easydo.com) 赞助开发的，在易度云查看
         # 不够20个，但队列空的时候，也会提交
         register_batch_queue(‘xapian’, 20, batch_func=do_commit)
 
+
+9. 插入到另外的redis数据库
+
+        from ztq_core.redis_wrap import setup_redis
+        setup_redis('proxy', HOST, PORT, db=0)
+
+        from ztq_core.task import push_task
+        push_task('doc2pdf:transform', ztq_system='proxy')
+
