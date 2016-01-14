@@ -16,15 +16,15 @@ def get_all_error_queue():
     task_queue = "ztq:queue:error:"
     return get_keys(task_queue)
 
-def get_task_hash(queue_name):
+def get_task_hash(queue_name, system='default'):
     """ 得到 一个 task_md5 -> task 的字典对象 """
-    return get_hash('ztq:hash:task:' + queue_name)
+    return get_hash('ztq:hash:task:' + queue_name, system=system)
 
 def get_task_set(queue_name, serialized_type='json'):
     """ 得到 一个 task_md5 -> task 的字典对象 """
     return get_set('ztq:set:task:' + queue_name, serialized_type=serialized_type)
 
-def get_task_queue(queue_name):
+def get_task_queue(queue_name, system='default'):
     """根据传入参数queue_name
 
     {"func":'transform',
@@ -62,7 +62,7 @@ def get_task_queue(queue_name):
     """
     #ListFu
     atom_queue = "ztq:queue:task:" + queue_name
-    return get_queue(atom_queue, serialized_type='string')
+    return get_queue(atom_queue, system=system, serialized_type='string')
 
 def get_command_queue(name):
     """ 同步配置、状态报告、杀死转换线程

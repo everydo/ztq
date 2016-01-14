@@ -74,7 +74,7 @@ def push_buffer_task(full_func_name, *args, **kw):
     task = gen_task(func_name, *args, **kw)
     model.get_buffer_queue(queue_name).push(task)
 
-def push_task(full_func_name, *args, **kw):
+def push_task(full_func_name, system='default', *args, **kw):
     """
     callback: 这是另外一个注册的task，在func调用完毕后，会启动这个
 
@@ -92,13 +92,13 @@ def push_task(full_func_name, *args, **kw):
     task = gen_task(func_name, *args, **kw)
     task_md5 = _get_task_md5(task)
 
-    task_hash = model.get_task_hash(queue_name)
+    task_hash = model.get_task_hash(queue_name, system=system)
 
     # 因为queue队列有worker不停在监视,必须先将hash的内容push,在将queue的内容push
     task['runtime'] = runtime
     if task_hash.__setitem__(task_md5, task) == 1:
         # 如果返回值等于0， 说明task_md5已经存在
-        queue = model.get_task_queue(queue_name)
+        queue = model.get_task_queue(queue_name, system=system)
         queue.push(task_md5, to_left=not to_right)
 
 def push_runtime_task(queue_name, task):
