@@ -83,7 +83,7 @@ def push_task(full_func_name, *args, **kw):
      task_regitry.push(u'foo:echo', aaa, bb, foo='bar', 
             callback='foo:callback', callback_args=(12,32,3), callback_kw={}) 
     """
-    system = kw.get('system', 'default')
+    system = kw.get('ztq_system', 'default')
     queue_name, func_name = split_full_func_name(full_func_name)
     to_right = kw.pop('ztq_first', False)
     # 队列运行相关信息
