@@ -74,7 +74,7 @@ def push_buffer_task(full_func_name, *args, **kw):
     task = gen_task(func_name, *args, **kw)
     model.get_buffer_queue(queue_name).push(task)
 
-def push_task(full_func_name, system='default', *args, **kw):
+def push_task(full_func_name, *args, **kw):
     """
     callback: 这是另外一个注册的task，在func调用完毕后，会启动这个
 
@@ -83,6 +83,7 @@ def push_task(full_func_name, system='default', *args, **kw):
      task_regitry.push(u'foo:echo', aaa, bb, foo='bar', 
             callback='foo:callback', callback_args=(12,32,3), callback_kw={}) 
     """
+    system = kw.get('system', 'default')
     queue_name, func_name = split_full_func_name(full_func_name)
     to_right = kw.pop('ztq_first', False)
     # 队列运行相关信息
