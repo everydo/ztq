@@ -3,7 +3,7 @@
 import sys, os
 from command_thread import CommandThread
 from config_manager import read_config_file
-from command_execute import init_job_threads, set_job_threads
+from command_execute import init_job_threads
 from system_info import get_ip
 
 import ztq_core
@@ -17,7 +17,7 @@ def run():
     config = read_config_file(conf_file)
     main(config)
 
-def main(config):
+def main(config, thread=False):
     """ 主函数 
 
     config: {'server': {host:, port:, db:}
@@ -88,7 +88,11 @@ def main(config):
         )
 
     # 不是以线程启动
-    command_thread.run()
+    if thread:
+        command_thread.setDaemon(True)
+        command_thread.start()
+    else:
+        command_thread.run()
 
 def initlog(key, handler_file, level):
     import logging
