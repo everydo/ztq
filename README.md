@@ -2,7 +2,7 @@ ZTQ：Z Task Queue
 ===========================================
 ZTQ是python语言的一个开源异步队列服务, 使用redis作为队列的存储和通讯。
 
-**这个项目已经转移到 http://github.com/easydo-cn/ztq/ **
+注意： 这个项目已经转移到: http://github.com/easydo-cn/ztq/ 
 
 和其他队列服务不同，ZTQ的设计目标是：
 
